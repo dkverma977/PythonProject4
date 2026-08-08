@@ -1,0 +1,9 @@
+flask
+flask-cors
+pandas
+pydantic
+numpy
+sqlalchemy
+openpyxl
+gunicorn
+waitress
