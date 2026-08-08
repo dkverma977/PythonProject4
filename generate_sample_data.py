@@ -6,8 +6,7 @@ def generate_excel():
     data = [
         # Substation-1, PCC-1, MCC-1, Feeders
         {
-            "Motor Tag": "M-101", "Motor Name": "Raw Coal Conveyor-1", "Area": "Coal Handling Plant",
-            "Department": "Mechanical", "Power": "110 kW", "Voltage": "415 V", "Current": "190 A", "RPM": 1485,
+            "Motor Tag": "M-101", "Motor Name": "Raw Coal Conveyor-1", "Area": "Coal Handling Plant", "Power": "110 kW", "Voltage": "415 V", "Current": "190 A", "RPM": 1485,
             "Efficiency": "94.5%", "Motor Make": "Siemens", "Model": "1LA8315-4AB60", "Serial Number": "S-98481A22",
             "Frame": "315M", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-1", "Feeder": "Feeder-1", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -18,8 +17,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-102", "Motor Name": "Coal Crusher-1 Drive", "Area": "Coal Handling Plant",
-            "Department": "Mechanical", "Power": "250 kW", "Voltage": "3300 V", "Current": "55 A", "RPM": 990,
+            "Motor Tag": "M-102", "Motor Name": "Coal Crusher-1 Drive", "Area": "Coal Handling Plant", "Power": "250 kW", "Voltage": "3300 V", "Current": "55 A", "RPM": 990,
             "Efficiency": "95.2%", "Motor Make": "ABB", "Model": "M3BP-355MLA", "Serial Number": "A-83921B19",
             "Frame": "355ML", "Duty": "S1 Continuous", "Protection": "IP56", "Insulation": "Class H",
             "MCC": "MCC-1", "Feeder": "Feeder-2", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -30,8 +28,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-103", "Motor Name": "Vibrating Screen-1 Drive", "Area": "Coal Handling Plant",
-            "Department": "Mechanical", "Power": "22 kW", "Voltage": "415 V", "Current": "39 A", "RPM": 1460,
+            "Motor Tag": "M-103", "Motor Name": "Vibrating Screen-1 Drive", "Area": "Coal Handling Plant", "Power": "22 kW", "Voltage": "415 V", "Current": "39 A", "RPM": 1460,
             "Efficiency": "91.8%", "Motor Make": "Siemens", "Model": "1LE1001-1DB4", "Serial Number": "S-38291C01",
             "Frame": "160L", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-1", "Feeder": "Feeder-3", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -42,8 +39,7 @@ def generate_excel():
             "Is Critical": "No"
         },
         {
-            "Motor Tag": "M-104", "Motor Name": "Bag Filter Fan-1", "Area": "Coal Handling Plant",
-            "Department": "Electrical", "Power": "45 kW", "Voltage": "415 V", "Current": "78 A", "RPM": 1475,
+            "Motor Tag": "M-104", "Motor Name": "Bag Filter Fan-1", "Area": "Coal Handling Plant", "Power": "45 kW", "Voltage": "415 V", "Current": "78 A", "RPM": 1475,
             "Efficiency": "93.6%", "Motor Make": "CG Global", "Model": "GD180L", "Serial Number": "C-1293810",
             "Frame": "225M", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-1", "Feeder": "Feeder-4", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -56,8 +52,7 @@ def generate_excel():
         
         # Substation-1, PCC-1, MCC-2, Feeders
         {
-            "Motor Tag": "M-111", "Motor Name": "Boiler Feed Pump-1A", "Area": "Boiler Area",
-            "Department": "Mechanical", "Power": "630 kW", "Voltage": "6600 V", "Current": "68 A", "RPM": 2980,
+            "Motor Tag": "M-111", "Motor Name": "Boiler Feed Pump-1A", "Area": "Boiler Area", "Power": "630 kW", "Voltage": "6600 V", "Current": "68 A", "RPM": 2980,
             "Efficiency": "96.1%", "Motor Make": "ABB", "Model": "AMI-500L2", "Serial Number": "A-72819C20",
             "Frame": "500L", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class H",
             "MCC": "MCC-2", "Feeder": "Feeder-1", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -68,8 +63,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-112", "Motor Name": "Boiler Feed Pump-1B", "Area": "Boiler Area",
-            "Department": "Mechanical", "Power": "630 kW", "Voltage": "6600 V", "Current": "68 A", "RPM": 2980,
+            "Motor Tag": "M-112", "Motor Name": "Boiler Feed Pump-1B", "Area": "Boiler Area", "Power": "630 kW", "Voltage": "6600 V", "Current": "68 A", "RPM": 2980,
             "Efficiency": "96.1%", "Motor Make": "ABB", "Model": "AMI-500L2", "Serial Number": "A-72819C21",
             "Frame": "500L", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class H",
             "MCC": "MCC-2", "Feeder": "Feeder-2", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -80,8 +74,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-113", "Motor Name": "FD Fan Drive-1", "Area": "Boiler Area",
-            "Department": "Mechanical", "Power": "132 kW", "Voltage": "415 V", "Current": "225 A", "RPM": 1485,
+            "Motor Tag": "M-113", "Motor Name": "FD Fan Drive-1", "Area": "Boiler Area", "Power": "132 kW", "Voltage": "415 V", "Current": "225 A", "RPM": 1485,
             "Efficiency": "94.8%", "Motor Make": "Siemens", "Model": "1LA8315-4AB60", "Serial Number": "S-22819C",
             "Frame": "315M", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-2", "Feeder": "Feeder-3", "PCC": "PCC-1", "Substation": "Main Substation-1",
@@ -94,8 +87,7 @@ def generate_excel():
         
         # Substation-1, PCC-2, MCC-3, Feeders
         {
-            "Motor Tag": "M-201", "Motor Name": "Cooling Tower Pump-1A", "Area": "Utility Area",
-            "Department": "Mechanical", "Power": "90 kW", "Voltage": "415 V", "Current": "155 A", "RPM": 1475,
+            "Motor Tag": "M-201", "Motor Name": "Cooling Tower Pump-1A", "Area": "Utility Area", "Power": "90 kW", "Voltage": "415 V", "Current": "155 A", "RPM": 1475,
             "Efficiency": "93.9%", "Motor Make": "CG Global", "Model": "GD250M", "Serial Number": "C-39102",
             "Frame": "280S", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-3", "Feeder": "Feeder-1", "PCC": "PCC-2", "Substation": "Main Substation-1",
@@ -106,8 +98,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-202", "Motor Name": "Cooling Tower Pump-1B", "Area": "Utility Area",
-            "Department": "Mechanical", "Power": "90 kW", "Voltage": "415 V", "Current": "155 A", "RPM": 1475,
+            "Motor Tag": "M-202", "Motor Name": "Cooling Tower Pump-1B", "Area": "Utility Area", "Power": "90 kW", "Voltage": "415 V", "Current": "155 A", "RPM": 1475,
             "Efficiency": "93.9%", "Motor Make": "CG Global", "Model": "GD250M", "Serial Number": "C-39103",
             "Frame": "280S", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-3", "Feeder": "Feeder-2", "PCC": "PCC-2", "Substation": "Main Substation-1",
@@ -118,8 +109,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-203", "Motor Name": "Cooling Tower Fan-1", "Area": "Utility Area",
-            "Department": "Electrical", "Power": "30 kW", "Voltage": "415 V", "Current": "53 A", "RPM": 970,
+            "Motor Tag": "M-203", "Motor Name": "Cooling Tower Fan-1", "Area": "Utility Area", "Power": "30 kW", "Voltage": "415 V", "Current": "53 A", "RPM": 970,
             "Efficiency": "92.4%", "Motor Make": "Siemens", "Model": "1LE1001-2DB4", "Serial Number": "S-38291",
             "Frame": "200L", "Duty": "S1 Continuous", "Protection": "IP56", "Insulation": "Class F",
             "MCC": "MCC-3", "Feeder": "Feeder-3", "PCC": "PCC-2", "Substation": "Main Substation-1",
@@ -132,8 +122,7 @@ def generate_excel():
 
         # Substation-2, PCC-4, MCC-4, Feeders
         {
-            "Motor Tag": "M-301", "Motor Name": "Compressor-1 Motor", "Area": "Utility Area",
-            "Department": "Electrical", "Power": "160 kW", "Voltage": "415 V", "Current": "270 A", "RPM": 1485,
+            "Motor Tag": "M-301", "Motor Name": "Compressor-1 Motor", "Area": "Utility Area", "Power": "160 kW", "Voltage": "415 V", "Current": "270 A", "RPM": 1485,
             "Efficiency": "95.0%", "Motor Make": "ABB", "Model": "M3BP-315MLA", "Serial Number": "A-9281A",
             "Frame": "315S", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-4", "Feeder": "Feeder-1", "PCC": "PCC-4", "Substation": "Main Substation-2",
@@ -144,8 +133,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-302", "Motor Name": "Compressor-2 Motor", "Area": "Utility Area",
-            "Department": "Electrical", "Power": "160 kW", "Voltage": "415 V", "Current": "270 A", "RPM": 1485,
+            "Motor Tag": "M-302", "Motor Name": "Compressor-2 Motor", "Area": "Utility Area", "Power": "160 kW", "Voltage": "415 V", "Current": "270 A", "RPM": 1485,
             "Efficiency": "95.0%", "Motor Make": "ABB", "Model": "M3BP-315MLA", "Serial Number": "A-9281B",
             "Frame": "315S", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-4", "Feeder": "Feeder-2", "PCC": "PCC-4", "Substation": "Main Substation-2",
@@ -158,8 +146,7 @@ def generate_excel():
         
         # Substation-2, PCC-5, MCC-5, Feeders
         {
-            "Motor Tag": "M-401", "Motor Name": "Water Intake Pump-1", "Area": "Water Treatment Plant",
-            "Department": "Mechanical", "Power": "200 kW", "Voltage": "3300 V", "Current": "44 A", "RPM": 1480,
+            "Motor Tag": "M-401", "Motor Name": "Water Intake Pump-1", "Area": "Water Treatment Plant", "Power": "200 kW", "Voltage": "3300 V", "Current": "44 A", "RPM": 1480,
             "Efficiency": "94.8%", "Motor Make": "Siemens", "Model": "1LA8315-4AB60", "Serial Number": "S-38102A",
             "Frame": "315L", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-5", "Feeder": "Feeder-1", "PCC": "PCC-5", "Substation": "Main Substation-2",
@@ -170,8 +157,7 @@ def generate_excel():
             "Is Critical": "Yes"
         },
         {
-            "Motor Tag": "M-402", "Motor Name": "Sludge Agitator-1", "Area": "Water Treatment Plant",
-            "Department": "Mechanical", "Power": "11 kW", "Voltage": "415 V", "Current": "21 A", "RPM": 960,
+            "Motor Tag": "M-402", "Motor Name": "Sludge Agitator-1", "Area": "Water Treatment Plant", "Power": "11 kW", "Voltage": "415 V", "Current": "21 A", "RPM": 960,
             "Efficiency": "89.5%", "Motor Make": "CG Global", "Model": "GD160M", "Serial Number": "C-29381A",
             "Frame": "160M", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-5", "Feeder": "Feeder-2", "PCC": "PCC-5", "Substation": "Main Substation-2",
@@ -182,8 +168,7 @@ def generate_excel():
             "Is Critical": "No"
         },
         {
-            "Motor Tag": "M-403", "Motor Name": "Backwash Blower-1", "Area": "Water Treatment Plant",
-            "Department": "Electrical", "Power": "37 kW", "Voltage": "415 V", "Current": "66 A", "RPM": 2930,
+            "Motor Tag": "M-403", "Motor Name": "Backwash Blower-1", "Area": "Water Treatment Plant", "Power": "37 kW", "Voltage": "415 V", "Current": "66 A", "RPM": 2930,
             "Efficiency": "93.0%", "Motor Make": "Siemens", "Model": "1LE1001-2AB4", "Serial Number": "S-38102B",
             "Frame": "200L", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-5", "Feeder": "Feeder-3", "PCC": "PCC-5", "Substation": "Main Substation-2",
@@ -196,8 +181,7 @@ def generate_excel():
 
         # Utility Substation (MCC-6, Feeders)
         {
-            "Motor Tag": "M-501", "Motor Name": "Wastewater Transfer Pump", "Area": "Utility Area",
-            "Department": "Mechanical", "Power": "15 kW", "Voltage": "415 V", "Current": "28 A", "RPM": 1440,
+            "Motor Tag": "M-501", "Motor Name": "Wastewater Transfer Pump", "Area": "Utility Area", "Power": "15 kW", "Voltage": "415 V", "Current": "28 A", "RPM": 1440,
             "Efficiency": "90.2%", "Motor Make": "CG Global", "Model": "GD160M", "Serial Number": "C-29381B",
             "Frame": "160M", "Duty": "S1 Continuous", "Protection": "IP55", "Insulation": "Class F",
             "MCC": "MCC-6", "Feeder": "Feeder-1", "PCC": "PCC-6", "Substation": "Utility Substation",
@@ -208,8 +192,7 @@ def generate_excel():
             "Is Critical": "No"
         },
         {
-            "Motor Tag": "M-502", "Motor Name": "ETP Aerator Motor", "Area": "Utility Area",
-            "Department": "Mechanical", "Power": "22 kW", "Voltage": "415 V", "Current": "39 A", "RPM": 1450,
+            "Motor Tag": "M-502", "Motor Name": "ETP Aerator Motor", "Area": "Utility Area", "Power": "22 kW", "Voltage": "415 V", "Current": "39 A", "RPM": 1450,
             "Efficiency": "91.5%", "Motor Make": "Siemens", "Model": "1LE1001-1DB4", "Serial Number": "S-9281C",
             "Frame": "180M", "Duty": "S1 Continuous", "Protection": "IP56", "Insulation": "Class F",
             "MCC": "MCC-6", "Feeder": "Feeder-2", "PCC": "PCC-6", "Substation": "Utility Substation",

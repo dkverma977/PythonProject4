@@ -51,7 +51,6 @@ export const DashboardComponent = {
       }
       // 2. Dropdown Filters
       if (filters.area && m.area !== filters.area) return false;
-      if (filters.department && m.department !== filters.department) return false;
       if (filters.voltage && m.voltage !== parseInt(filters.voltage)) return false;
       if (filters.make && m.make !== filters.make) return false;
       if (filters.status && m.status !== filters.status) return false;

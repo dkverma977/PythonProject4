@@ -23,7 +23,6 @@ DROP TABLE IF EXISTS mccs;
 DROP TABLE IF EXISTS substations;
 DROP TABLE IF EXISTS manufacturers;
 DROP TABLE IF EXISTS areas;
-DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS days_of_week;
 DROP TABLE IF EXISTS calendar_days;
 DROP TABLE IF EXISTS users;
@@ -66,17 +65,9 @@ CREATE TABLE days_of_week (
 -- ------------------------------------------------------------------------------
 -- 4. NORMALIZED LOOKUP TABLES (Eliminate Data Redundancy)
 -- ------------------------------------------------------------------------------
-CREATE TABLE departments (
-    department_id INT AUTO_INCREMENT PRIMARY KEY,
-    department_name VARCHAR(100) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE areas (
     area_id INT AUTO_INCREMENT PRIMARY KEY,
-    department_id INT NOT NULL,
-    area_name VARCHAR(100) NOT NULL,
-    FOREIGN KEY (department_id) REFERENCES departments(department_id)
-        ON DELETE RESTRICT ON UPDATE CASCADE
+    area_name VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE manufacturers (

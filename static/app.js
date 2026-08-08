@@ -15,7 +15,6 @@ export const state = {
   selectedNode: { id: 'plant', label: 'Industrial Plant', type: 'plant' },
   activeFilters: {
     area: '',
-    department: '',
     voltage: '',
     make: '',
     status: '',
@@ -181,7 +180,6 @@ function setupGlobalEvents() {
   // Filter Selects
   const filterIds = [
     { id: 'filter-area', key: 'area' },
-    { id: 'filter-dept', key: 'department' },
     { id: 'filter-voltage', key: 'voltage' },
     { id: 'filter-make', key: 'make' },
     { id: 'filter-status', key: 'status' },
@@ -257,23 +255,19 @@ export async function loadData() {
 // Populate drop-down filter menus from unique active records
 function populateFiltersLists() {
   const areas = [...new Set(state.motors.map(m => m.area).filter(Boolean))].sort();
-  const depts = [...new Set(state.motors.map(m => m.department).filter(Boolean))].sort();
   const volts = [...new Set(state.motors.map(m => m.voltage).filter(Boolean))].sort((a,b) => a-b);
   const makes = [...new Set(state.motors.map(m => m.make).filter(Boolean))].sort();
 
   const areaSelect = document.getElementById('filter-area');
-  const deptSelect = document.getElementById('filter-dept');
   const voltSelect = document.getElementById('filter-voltage');
   const makeSelect = document.getElementById('filter-make');
 
   // Keep first option
   areaSelect.innerHTML = '<option value="">All Areas</option>';
-  deptSelect.innerHTML = '<option value="">All Departments</option>';
   voltSelect.innerHTML = '<option value="">All Voltages</option>';
   makeSelect.innerHTML = '<option value="">All Makes</option>';
 
   areas.forEach(a => areaSelect.add(new Option(a, a)));
-  depts.forEach(d => deptSelect.add(new Option(d, d)));
   volts.forEach(v => {
     const label = v < 1000 ? `${v} V` : `${v/1000:.1f} kV`;
     voltSelect.add(new Option(label, v));

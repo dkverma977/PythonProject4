@@ -23,7 +23,6 @@ class Motor(Base):
     tag = Column(String, primary_key=True, index=True)
     name = Column(String, nullable=False)
     area = Column(String)
-    department = Column(String)
     service = Column(String)
     power_kw = Column(Float)
     voltage = Column(Integer)
@@ -66,7 +65,6 @@ class Motor(Base):
             "tag": self.tag,
             "name": self.name,
             "area": self.area,
-            "department": self.department,
             "service": self.service,
             "power_kw": self.power_kw,
             "voltage": self.voltage,
@@ -172,7 +170,6 @@ class DatabaseAPI:
                         tag=str(row["Motor Tag"]).strip(),
                         name=str(row["Motor Name"]).strip(),
                         area=str(row.get("Area")).strip(),
-                        department=str(row.get("Department")).strip(),
                         service="Conveyor / Pump Duty",
                         power_kw=float(str(row.get("Power")).replace('kW','').strip()) if not pd.isna(row.get("Power")) else 45.0,
                         voltage=int(str(row.get("Voltage")).replace('V','').strip()) if not pd.isna(row.get("Voltage")) else 415,
@@ -320,7 +317,7 @@ class DatabaseAPI:
         finally:
             db.close()
 
-    def get_motors(self, search: str = None, area: str = None, department: str = None,
+    def get_motors(self, search: str = None, area: str = None,
                    voltage: int = None, make: str = None, status: str = None,
                    is_critical: bool = None, power_min: float = None, power_max: float = None) -> List[Dict[str, Any]]:
         """Query motors with optional filters."""
@@ -331,12 +328,10 @@ class DatabaseAPI:
                 sf = f"%{search}%"
                 query = query.filter(
                     Motor.tag.like(sf) | Motor.name.like(sf) | Motor.area.like(sf) |
-                    Motor.department.like(sf) | Motor.make.like(sf) | Motor.location.like(sf)
+                    Motor.make.like(sf) | Motor.location.like(sf)
                 )
             if area:
                 query = query.filter(Motor.area == area)
-            if department:
-                query = query.filter(Motor.department == department)
             if voltage:
                 query = query.filter(Motor.voltage == voltage)
             if make:

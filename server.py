@@ -32,7 +32,6 @@ class Motor(Base):
     tag = Column(String, primary_key=True, index=True)
     name = Column(String, nullable=False)
     area = Column(String)
-    department = Column(String)
     service = Column(String)
     power_kw = Column(Float)
     voltage = Column(Integer)
@@ -100,7 +99,6 @@ class MotorResponse(BaseModel):
     tag: str
     name: str
     area: Optional[str]
-    department: Optional[str]
     power_kw: Optional[float]
     voltage: Optional[int]
     status: str
@@ -272,7 +270,6 @@ def get_tree(db: Session = Depends(get_db)):
 def get_motors(
     search: Optional[str] = Query(None),
     area: Optional[str] = Query(None),
-    department: Optional[str] = Query(None),
     voltage: Optional[int] = Query(None),
     make: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
@@ -289,7 +286,6 @@ def get_motors(
             Motor.tag.like(search_filter) |
             Motor.name.like(search_filter) |
             Motor.area.like(search_filter) |
-            Motor.department.like(search_filter) |
             Motor.make.like(search_filter) |
             Motor.location.like(search_filter) |
             Motor.mcc.like(search_filter) |
@@ -298,8 +294,6 @@ def get_motors(
 
     if area:
         query = query.filter(Motor.area == area)
-    if department:
-        query = query.filter(Motor.department == department)
     if voltage:
         query = query.filter(Motor.voltage == voltage)
     if make:
@@ -432,7 +426,6 @@ def get_dashboard_data(db: Session = Depends(get_db)):
 def export_filtered_motors(
     search: Optional[str] = Query(None),
     area: Optional[str] = Query(None),
-    department: Optional[str] = Query(None),
     voltage: Optional[int] = Query(None),
     make: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
@@ -445,13 +438,11 @@ def export_filtered_motors(
         search_filter = f"%{search}%"
         query = query.filter(
             Motor.tag.like(search_filter) | Motor.name.like(search_filter) |
-            Motor.area.like(search_filter) | Motor.department.like(search_filter) |
+            Motor.area.like(search_filter) |
             Motor.make.like(search_filter)
         )
     if area:
         query = query.filter(Motor.area == area)
-    if department:
-        query = query.filter(Motor.department == department)
     if voltage:
         query = query.filter(Motor.voltage == voltage)
     if make:
@@ -470,7 +461,6 @@ def export_filtered_motors(
             "Motor Tag": m.tag,
             "Motor Name": m.name,
             "Area": m.area,
-            "Department": m.department,
             "Power (kW)": m.power_kw,
             "Voltage (V)": m.voltage,
             "Current (A)": m.current_amp,
@@ -536,7 +526,6 @@ def startup_db_seed():
                     tag=str(row["Motor Tag"]).strip(),
                     name=str(row["Motor Name"]).strip(),
                     area=str(row.get("Area")).strip(),
-                    department=str(row.get("Department")).strip(),
                     service="Conveyor / Pump Duty",
                     power_kw=power_val,
                     voltage=voltage_val,

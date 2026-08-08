@@ -221,7 +221,6 @@ function setupExportButtons() {
     const params = new URLSearchParams();
     if (state.searchQuery) params.append('search', state.searchQuery);
     if (state.activeFilters.area) params.append('area', state.activeFilters.area);
-    if (state.activeFilters.department) params.append('department', state.activeFilters.department);
     if (state.activeFilters.voltage) params.append('voltage', state.activeFilters.voltage);
     if (state.activeFilters.make) params.append('make', state.activeFilters.make);
     if (state.activeFilters.status) params.append('status', state.activeFilters.status);

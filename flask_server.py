@@ -40,7 +40,6 @@ def get_motors():
     """Retrieve motors list with optional query filters."""
     search = request.args.get("search")
     area = request.args.get("area")
-    department = request.args.get("department")
     voltage = request.args.get("voltage", type=int)
     make = request.args.get("make")
     status = request.args.get("status")
@@ -56,7 +55,6 @@ def get_motors():
     motors = db_api.get_motors(
         search=search,
         area=area,
-        department=department,
         voltage=voltage,
         make=make,
         status=status,
@@ -106,7 +104,6 @@ def export_excel():
     """Export filtered motors list as an Excel file download."""
     search = request.args.get("search")
     area = request.args.get("area")
-    department = request.args.get("department")
     voltage = request.args.get("voltage", type=int)
     make = request.args.get("make")
     status = request.args.get("status")
@@ -117,7 +114,7 @@ def export_excel():
         is_critical = is_critical_str.lower() in ["true", "1", "yes"]
 
     motors = db_api.get_motors(
-        search=search, area=area, department=department,
+        search=search, area=area,
         voltage=voltage, make=make, status=status, is_critical=is_critical
     )
 
@@ -127,7 +124,6 @@ def export_excel():
             "Motor Tag": m.get("tag"),
             "Motor Name": m.get("name"),
             "Area": m.get("area"),
-            "Department": m.get("department"),
             "Power (kW)": m.get("power_kw"),
             "Voltage (V)": m.get("voltage"),
             "Current (A)": m.get("current_amp"),

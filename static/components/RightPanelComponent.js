@@ -71,7 +71,6 @@ export const RightPanelComponent = {
       document.getElementById('lbl-tag').textContent = m.tag;
       document.getElementById('lbl-name').textContent = m.name;
       document.getElementById('lbl-area').textContent = m.area;
-      document.getElementById('lbl-dept').textContent = m.department;
       document.getElementById('lbl-service').textContent = m.service;
       document.getElementById('lbl-make').textContent = m.make;
       document.getElementById('lbl-model').textContent = m.model;
