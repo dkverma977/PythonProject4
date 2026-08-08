@@ -1,0 +1,61 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#001e3d" stroke="#00ffff" stroke-width="4"/>
+  <path d="M 0 50 L 800 50 M 0 100 L 800 100 M 0 150 L 800 150 M 0 200 L 800 200 M 0 250 L 800 250 M 0 300 L 800 300 M 0 350 L 800 350 M 0 400 L 800 400 M 0 450 L 800 450 M 0 500 L 800 500 M 0 550 L 800 550 M 50 0 L 50 600 M 100 0 L 100 600 M 150 0 L 150 600 M 200 0 L 200 600 M 250 0 L 250 600 M 300 0 L 300 600 M 350 0 L 350 600 M 400 0 L 400 600 M 450 0 L 450 600 M 500 0 L 500 600 M 550 0 L 550 600 M 600 0 L 600 600 M 650 0 L 650 600 M 700 0 L 700 600 M 750 0 L 750 600" stroke="#002d5a" stroke-width="0.5" fill="none"/>
+  <rect x="15" y="15" width="770" height="570" fill="none" stroke="#00ffff" stroke-width="1.5" stroke-dasharray="10 5"/>
+  <rect x="450" y="470" width="320" height="100" fill="#001e3d" stroke="#00ffff" stroke-width="2"/>
+  <g font-family="Consolas, monospace" font-size="10" fill="#00ffff">
+    <text x="460" y="490" font-size="14" font-weight="bold">PLANT SINGLE LINE DIAGRAM</text>
+    <text x="460" y="510">SYS: 33kV / 6.6kV / 415V DISTRIBUTION</text>
+    <text x="460" y="525">DRAWN BY: DIGITAL TWIN ENG.</text>
+    <text x="460" y="540">DWG NO: MT-SLD-CHP-001</text>
+    <text x="460" y="555">SCALE: N.T.S.   DATE: 2026-08-07</text>
+  </g>
+  <g stroke="#ff3f34" stroke-width="2" fill="none" transform="translate(200, 30)">
+    <text x="-80" y="20" font-family="Arial" font-size="12" font-weight="bold" fill="#ff3f34">33kV GRID INCOMER</text>
+    <path d="M 0 0 L 0 30 L 10 40 L -10 50 L 0 60 L 0 80" />
+    <polygon points="0,80 -5,90 5,90" fill="#ff3f34"/>
+    <rect x="-15" y="90" width="30" height="40" fill="#001e3d" stroke="#ff3f34" stroke-width="2"/>
+    <line x1="-15" y1="90" x2="15" y2="130" />
+    <text x="25" y="115" font-family="Arial" font-size="10" fill="#ff3f34">52 (SF6 CB)</text>
+    <line x1="0" y1="130" x2="0" y2="170"/>
+  </g>
+  <g stroke="#ffd32a" stroke-width="2" fill="none" transform="translate(200, 200)">
+    <circle cx="0" cy="20" r="20" stroke="#ffd32a"/>
+    <circle cx="0" cy="45" r="20" stroke="#ffd32a"/>
+    <text x="30" y="38" font-family="Arial" font-size="11" fill="#ffd32a">TR-1 (33/6.6kV, 5MVA)</text>
+    <text x="-40" y="20" font-family="Arial" font-size="10" fill="#ffd32a">Dyn11</text>
+    <line x1="0" y1="65" x2="0" y2="110"/>
+  </g>
+  <g transform="translate(100, 310)">
+    <line x1="0" y1="0" x2="600" y2="0" stroke="#ffd32a" stroke-width="6"/>
+    <text x="10" y="-10" font-family="Arial" font-size="12" font-weight="bold" fill="#ffd32a">MAIN SUBSTATION BUSBAR (6.6 kV, 50Hz)</text>
+  </g>
+  <g stroke="#0be881" stroke-width="2" fill="none" transform="translate(200, 310)">
+    <line x1="0" y1="0" x2="0" y2="40"/>
+    <rect x="-10" y="40" width="20" height="30" fill="#001e3d" stroke="#0be881"/>
+    <line x1="-10" y1="40" x2="10" y2="70"/>
+    <text x="15" y="60" font-family="Arial" font-size="10" fill="#0be881">HT Vacuum CB</text>
+    <line x1="0" y1="70" x2="0" y2="110"/>
+    <circle cx="0" cy="120" r="15" fill="#001e3d" stroke="#0be881"/>
+    <text x="0" y="124" text-anchor="middle" font-family="Arial" font-size="10" font-weight="bold" fill="#0be881">M</text>
+    <text x="25" y="125" font-family="Arial" font-size="11" fill="#0be881">M-102 (Coal Crusher-1, 250kW)</text>
+  </g>
+  <g stroke="#05c46b" stroke-width="2" fill="none" transform="translate(500, 310)">
+    <line x1="0" y1="0" x2="0" y2="40"/>
+    <circle cx="0" cy="60" r="18" stroke="#05c46b"/>
+    <circle cx="0" cy="85" r="18" stroke="#05c46b"/>
+    <text x="25" y="75" font-family="Arial" font-size="10" fill="#05c46b">TR-2 (6.6kV/415V, 1.6MVA)</text>
+    <line x1="0" y1="103" x2="0" y2="130"/>
+  </g>
+  <g transform="translate(350, 440)">
+    <line x1="0" y1="0" x2="300" y2="0" stroke="#0be881" stroke-width="4"/>
+    <text x="10" y="-10" font-family="Arial" font-size="11" font-weight="bold" fill="#0be881">PCC-1 BUSBAR (415 V)</text>
+  </g>
+  <g stroke="#0be881" stroke-width="1.5" fill="none" transform="translate(400, 440)">
+    <line x1="0" y1="0" x2="0" y2="30"/>
+    <line x1="-5" y1="30" x2="5" y2="30"/>
+    <line x1="0" y1="30" x2="-10" y2="50"/>
+    <line x1="-5" y1="50" x2="5" y2="50"/>
+    <text x="12" y="45" font-family="Arial" font-size="9" fill="#0be881">MCC-1 Incomer</text>
+  </g>
+</svg>
