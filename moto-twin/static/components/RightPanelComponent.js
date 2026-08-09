@@ -55,7 +55,7 @@ export const RightPanelComponent = {
 
       // Quick Spec Row
       document.getElementById('quick-power').textContent = `${m.power_kw} kW`;
-      document.getElementById('quick-voltage').textContent = m.voltage < 1000 ? `${m.voltage} V` : `${m.voltage/1000:.1f} kV`;
+      document.getElementById('quick-voltage').textContent = m.voltage < 1000 ? `${m.voltage} V` : `${(m.voltage/1000).toFixed(1)} kV`;
       document.getElementById('quick-rpm').textContent = m.rpm;
       
       const crit = document.getElementById('quick-critical');

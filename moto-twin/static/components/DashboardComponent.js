@@ -95,7 +95,7 @@ export const DashboardComponent = {
     // 3. Voltage
     const voltages = {};
     filtered.forEach(m => {
-      const v_str = m.voltage < 1000 ? `${m.voltage} V` : `${m.voltage/1000:.1f} kV`;
+      const v_str = m.voltage < 1000 ? `${m.voltage} V` : `${(m.voltage/1000).toFixed(1)} kV`;
       voltages[v_str] = (voltages[v_str] || 0) + 1;
     });
     const voltageData = Object.entries(voltages).map(([k, v]) => ({ voltage: k, count: v }));
