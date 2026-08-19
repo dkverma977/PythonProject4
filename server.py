@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine, Column, String, Integer, Float, Boolean, Date, Text, ForeignKey, desc
+from sqlalchemy import create_engine, Column, String, Integer, Float, Boolean, Date, Text, ForeignKey, desc, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import io
@@ -20,8 +20,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("motor-management-server")
 
 # Database Setup
-DATABASE_URL = "sqlite:///./motor_platform.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+import urllib.parse
+from sqlalchemy import text
+
+db_password = urllib.parse.quote_plus("sagar@1729")
+server_url = f"mysql+pymysql://root:{db_password}@localhost:3306"
+DATABASE_URL = f"{server_url}/motor_data"
+
+# Create database if it doesn't exist
+temp_engine = create_engine(server_url, isolation_level="AUTOCOMMIT")
+with temp_engine.connect() as conn:
+    conn.execute(text("CREATE DATABASE IF NOT EXISTS motor_data"))
+
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -29,41 +40,41 @@ Base = declarative_base()
 class Motor(Base):
     __tablename__ = "motors"
 
-    tag = Column(String, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    area = Column(String)
-    service = Column(String)
+    tag = Column(String(255), primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    area = Column(String(255))
+    service = Column(String(255))
     power_kw = Column(Float)
     voltage = Column(Integer)
     current_amp = Column(Float)
     frequency_hz = Column(Float, default=50.0)
     rpm = Column(Integer)
-    efficiency = Column(String)
+    efficiency = Column(String(255))
     pf = Column(Float)
-    frame_size = Column(String)
-    protection_class = Column(String)
-    insulation_class = Column(String)
-    duty = Column(String)
-    make = Column(String)
-    model = Column(String)
-    serial_number = Column(String)
+    frame_size = Column(String(255))
+    protection_class = Column(String(255))
+    insulation_class = Column(String(255))
+    duty = Column(String(255))
+    make = Column(String(255))
+    model = Column(String(255))
+    serial_number = Column(String(255))
     mfg_year = Column(Integer)
-    bearing_de = Column(String)
-    bearing_nde = Column(String)
-    lubrication_type = Column(String)
-    cable_size = Column(String)
+    bearing_de = Column(String(255))
+    bearing_nde = Column(String(255))
+    lubrication_type = Column(String(255))
+    cable_size = Column(String(255))
     cable_length_m = Column(Float)
-    starter_type = Column(String)
-    breaker_details = Column(String)
-    relay_details = Column(String)
-    substation = Column(String)
-    pcc = Column(String)
-    mcc = Column(String)
-    feeder = Column(String)
-    incoming = Column(String)
-    location = Column(String)
+    starter_type = Column(String(255))
+    breaker_details = Column(String(255))
+    relay_details = Column(String(255))
+    substation = Column(String(255))
+    pcc = Column(String(255))
+    mcc = Column(String(255))
+    feeder = Column(String(255))
+    incoming = Column(String(255))
+    location = Column(String(255))
     remarks = Column(Text)
-    status = Column(String, default="Running") # Running, Standby, Fault
+    status = Column(String(255), default="Running") # Running, Standby, Fault
     is_critical = Column(Boolean, default=False)
     commission_date = Column(Date)
     last_maintenance_date = Column(Date)
@@ -73,10 +84,10 @@ class MaintenanceLog(Base):
     __tablename__ = "maintenance_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    motor_tag = Column(String, ForeignKey("motors.tag", ondelete="CASCADE"), index=True)
+    motor_tag = Column(String(255), ForeignKey("motors.tag", ondelete="CASCADE"), index=True)
     log_date = Column(Date, default=datetime.date.today)
-    type = Column(String) # Bearing Replacement, Lubrication, Alignment, Insulation Test, Megger Test, Vibration Report, Overhauling
-    technician = Column(String)
+    type = Column(String(255)) # Bearing Replacement, Lubrication, Alignment, Insulation Test, Megger Test, Vibration Report, Overhauling
+    technician = Column(String(255))
     notes = Column(Text)
     vibration_de_mm_s = Column(Float, nullable=True)
     vibration_nde_mm_s = Column(Float, nullable=True)

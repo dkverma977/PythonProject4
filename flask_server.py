@@ -19,7 +19,7 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 CORS(app)
 
 # Instantiate Database API Class with environment variable support
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./motor_platform.db")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 db_api = DatabaseAPI(DATABASE_URL)
 
 # Serve Frontend

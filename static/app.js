@@ -137,14 +137,14 @@ function updateUIForRole() {
   
   // Role based access logic
   if (state.role === 'Viewer') {
-    importBtn.style.display = 'none';
+    if (importBtn) importBtn.style.display = 'none';
     if (addLogBtn) addLogBtn.style.display = 'none';
   } else if (state.role === 'Engineer') {
-    importBtn.style.display = 'none';
+    if (importBtn) importBtn.style.display = 'none';
     if (addLogBtn) addLogBtn.style.display = 'inline-block';
   } else {
     // Admin
-    importBtn.style.display = 'flex';
+    if (importBtn) importBtn.style.display = 'flex';
     if (addLogBtn) addLogBtn.style.display = 'inline-block';
   }
 }
@@ -230,18 +230,20 @@ function setupGlobalEvents() {
 // 5. Load and refresh data from Backend
 export async function loadData() {
   try {
+    const API_BASE = 'http://127.0.0.1:8000';
+    
     // 1. Fetch Tree
-    const treeRes = await fetch('/api/tree');
+    const treeRes = await fetch(`${API_BASE}/api/tree`);
     state.treeData = await treeRes.json();
     TreeComponent.init(state.treeData);
 
     // 2. Fetch Motors (all)
-    const motorsRes = await fetch('/api/motors');
+    const motorsRes = await fetch(`${API_BASE}/api/motors`);
     state.motors = await motorsRes.json();
     populateFiltersLists();
 
     // 3. Fetch Dashboard Telemetry
-    const dashRes = await fetch('/api/dashboard');
+    const dashRes = await fetch(`${API_BASE}/api/dashboard`);
     state.dashboardData = await dashRes.json();
     DashboardComponent.render(state.dashboardData);
 
@@ -269,7 +271,7 @@ function populateFiltersLists() {
 
   areas.forEach(a => areaSelect.add(new Option(a, a)));
   volts.forEach(v => {
-    const label = v < 1000 ? `${v} V` : `${v/1000:.1f} kV`;
+    const label = v < 1000 ? `${v} V` : `${(v/1000).toFixed(1)} kV`;
     voltSelect.add(new Option(label, v));
   });
   makes.forEach(m => makeSelect.add(new Option(m, m)));
