@@ -104,6 +104,30 @@ class Motor(Base):
         }
 
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(255), unique=True, nullable=False, index=True)
+    password_hash = Column(String(255), nullable=False)
+    full_name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
+    role = Column(String(50), default="Viewer") # Admin, Engineer, Viewer
+    created_at = Column(Date, default=datetime.date.today)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "username": self.username,
+            "full_name": self.full_name,
+            "email": self.email,
+            "role": self.role,
+            "created_at": self.created_at.strftime("%Y-%m-%d") if self.created_at else None
+        }
+
+
 class MaintenanceLog(Base):
     __tablename__ = "maintenance_logs"
 
@@ -131,6 +155,7 @@ class MaintenanceLog(Base):
         }
 
 
+
 class DatabaseAPI:
     """Class encapsulation for database management and CRUD operations."""
 
@@ -138,22 +163,27 @@ class DatabaseAPI:
         if db_url is None:
             db_url = os.environ.get("DATABASE_URL")
             if not db_url:
-                import urllib.parse
-                db_password = urllib.parse.quote_plus("sagar@1729")
-                db_url = f"mysql+pymysql://root:{db_password}@localhost:3306/motor_data"
-        
-        self.db_url = db_url
+                if os.path.exists("motor_platform.db"):
+                    db_url = "sqlite:///motor_platform.db"
+                else:
+                    import urllib.parse
+                    db_password = urllib.parse.quote_plus("sagar@1729")
+                    db_url = f"mysql+pymysql://root:{db_password}@localhost:3306/motor_data"
         
         # Create database if mysql and it doesn't exist
         if db_url.startswith("mysql"):
-            from sqlalchemy import text
-            # Extract server url without db name
-            server_url = db_url.rsplit('/', 1)[0]
-            db_name = db_url.rsplit('/', 1)[1]
-            temp_engine = create_engine(server_url, isolation_level="AUTOCOMMIT")
-            with temp_engine.connect() as conn:
-                conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {db_name}"))
+            try:
+                from sqlalchemy import text
+                server_url = db_url.rsplit('/', 1)[0]
+                db_name = db_url.rsplit('/', 1)[1]
+                temp_engine = create_engine(server_url, isolation_level="AUTOCOMMIT")
+                with temp_engine.connect() as conn:
+                    conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {db_name}"))
+            except Exception as e:
+                logger.warning(f"MySQL connection failed ({e}). Falling back to SQLite motor_platform.db...")
+                db_url = "sqlite:///motor_platform.db"
 
+        self.db_url = db_url
         connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
         self.engine = create_engine(db_url, connect_args=connect_args)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
@@ -161,8 +191,12 @@ class DatabaseAPI:
 
     def init_db(self):
         """Create tables if they do not exist."""
-        Base.metadata.create_all(bind=self.engine)
+        try:
+            Base.metadata.create_all(bind=self.engine, checkfirst=True)
+        except Exception as e:
+            logger.warning(f"Table creation check warning: {e}")
         self.auto_seed()
+
 
     def get_session(self) -> Session:
         """Helper to get a database session."""
@@ -242,6 +276,19 @@ class DatabaseAPI:
                         db.add(m_log)
                 db.commit()
                 logger.info("Auto-seeding finished successfully.")
+
+            # Seed default users if users table is empty
+            user_count = db.query(User).count()
+            if user_count == 0:
+                logger.info("Seeding default user accounts...")
+                default_users = [
+                    User(username="admin", password_hash=generate_password_hash("admin123"), full_name="System Admin", email="admin@mototwin.com", role="Admin"),
+                    User(username="engineer", password_hash=generate_password_hash("eng123"), full_name="Senior Engineer", email="engineer@mototwin.com", role="Engineer"),
+                    User(username="viewer", password_hash=generate_password_hash("viewer123"), full_name="Operator Viewer", email="viewer@mototwin.com", role="Viewer")
+                ]
+                for u in default_users:
+                    db.add(u)
+                db.commit()
         except Exception as e:
             logger.error(f"Auto-seeding error: {e}")
             db.rollback()
@@ -480,3 +527,49 @@ class DatabaseAPI:
             }
         finally:
             db.close()
+
+    def get_user_by_username(self, username: str) -> Optional[Dict[str, Any]]:
+        """Retrieve user by username."""
+        db = self.get_session()
+        try:
+            user = db.query(User).filter(User.username == username).first()
+            return user.to_dict() if user else None
+        finally:
+            db.close()
+
+    def verify_user(self, username: str, password: str) -> Optional[Dict[str, Any]]:
+        """Verify username & password and return user object if valid."""
+        db = self.get_session()
+        try:
+            user = db.query(User).filter(User.username == username).first()
+            if user and check_password_hash(user.password_hash, password):
+                return user.to_dict()
+            return None
+        finally:
+            db.close()
+
+    def create_user(self, username: str, password: str, full_name: str, email: str = None, role: str = "Viewer") -> Dict[str, Any]:
+        """Create a new user account."""
+        db = self.get_session()
+        try:
+            existing = db.query(User).filter(User.username == username).first()
+            if existing:
+                raise ValueError(f"Username '{username}' is already taken.")
+            
+            pwd_hash = generate_password_hash(password)
+            new_user = User(
+                username=username,
+                password_hash=pwd_hash,
+                full_name=full_name,
+                email=email,
+                role=role
+            )
+            db.add(new_user)
+            db.commit()
+            return new_user.to_dict()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+

@@ -6,7 +6,7 @@ Uses DatabaseAPI class for data management and exposes REST API endpoints.
 import os
 import io
 import logging
-from flask import Flask, jsonify, request, send_from_directory, Response, send_file
+from flask import Flask, jsonify, request, send_from_directory, Response, send_file, session
 from flask_cors import CORS
 import pandas as pd
 from database_api import DatabaseAPI
@@ -16,7 +16,8 @@ logger = logging.getLogger("flask-server")
 
 # Initialize Flask App
 app = Flask(__name__, static_folder="static", static_url_path="/static")
-CORS(app)
+app.secret_key = os.environ.get("SECRET_KEY", "moto-twin-super-secret-key-2026")
+CORS(app, supports_credentials=True)
 
 # Instantiate Database API Class with environment variable support
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -27,7 +28,63 @@ db_api = DatabaseAPI(DATABASE_URL)
 def index():
     return send_from_directory("static", "index.html")
 
+# Authentication Endpoints
+
+@app.route("/api/auth/login", methods=["POST"])
+def auth_login():
+    """Authenticate user credentials and start session."""
+    data = request.get_json() or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "").strip()
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required."}), 400
+
+    user = db_api.verify_user(username, password)
+    if not user:
+        return jsonify({"error": "Invalid username or password."}), 401
+
+    session["user"] = user
+    return jsonify({"status": "success", "user": user})
+
+@app.route("/api/auth/logout", methods=["POST"])
+def auth_logout():
+    """End active user session."""
+    session.pop("user", None)
+    return jsonify({"status": "success", "message": "Logged out successfully."})
+
+@app.route("/api/auth/me", methods=["GET"])
+def auth_me():
+    """Get active logged-in user profile."""
+    user = session.get("user")
+    if not user:
+        return jsonify({"authenticated": False, "user": None})
+    return jsonify({"authenticated": True, "user": user})
+
+@app.route("/api/auth/register", methods=["POST"])
+def auth_register():
+    """Register a new user account."""
+    data = request.get_json() or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "").strip()
+    full_name = data.get("full_name", "").strip()
+    email = data.get("email", "").strip()
+    role = data.get("role", "Viewer").strip()
+
+    if not username or not password or not full_name:
+        return jsonify({"error": "Username, password, and full name are required."}), 400
+
+    try:
+        user = db_api.create_user(username=username, password=password, full_name=full_name, email=email, role=role)
+        session["user"] = user
+        return jsonify({"status": "success", "user": user}), 201
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": f"Failed to register user: {str(e)}"}), 500
+
 # REST API Endpoints
+
 
 @app.route("/api/tree", methods=["GET"])
 def get_tree():

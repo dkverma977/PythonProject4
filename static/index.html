@@ -23,6 +23,9 @@
   <!-- Top Header Bar -->
   <header class="app-header">
     <div class="logo-area">
+      <button id="mobile-tree-toggle" class="mobile-toggle-btn" title="Toggle Power Tree">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <i class="fa-solid fa-industry logo-icon"></i>
       <span class="logo-text">MOTO-TWIN</span>
       <span class="logo-subtext">Digital Twin Asset Hub</span>
@@ -41,20 +44,48 @@
         <i class="fa-solid fa-circle-xmark clear-search" id="clear-search" style="display: none;"></i>
       </div>
 
-      <!-- Role Switcher -->
-      <div class="control-group">
-        <i class="fa-solid fa-user-shield group-icon"></i>
-        <select id="role-select" title="Access Role">
-          <option value="Viewer">Viewer (Read-Only)</option>
-          <option value="Engineer">Engineer (Log Maintenance)</option>
-          <option value="Admin" selected>Admin (Full Control)</option>
-        </select>
+      <!-- User Profile / Auth Widget -->
+      <div class="user-widget" id="user-widget">
+        <!-- Logged Out View -->
+        <button id="header-login-btn" class="user-login-btn">
+          <i class="fa-solid fa-lock"></i>
+          <span>Sign In</span>
+        </button>
+
+        <!-- Logged In View -->
+        <div id="user-profile-menu" class="user-profile-menu" style="display: none;">
+          <button id="user-avatar-btn" class="user-avatar-btn" title="User Profile Menu">
+            <div class="user-avatar" id="user-avatar-initials">SA</div>
+            <div class="user-info-text">
+              <span class="user-name" id="user-display-name">System Admin</span>
+              <span class="user-role-badge role-admin" id="user-role-badge">Admin</span>
+            </div>
+            <i class="fa-solid fa-chevron-down dropdown-caret"></i>
+          </button>
+          <!-- User Dropdown Menu -->
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-header">
+              <div class="dropdown-user-name" id="dd-user-name">System Admin</div>
+              <div class="dropdown-user-email" id="dd-user-email">admin@mototwin.com</div>
+              <div class="dropdown-user-role"><i class="fa-solid fa-shield-halved"></i> Role: <strong id="dd-user-role">Admin</strong></div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button id="user-logout-btn" class="dropdown-item danger-item">
+              <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Theme Switcher -->
       <button id="theme-toggle" class="control-btn" title="Toggle Theme">
         <i class="fa-solid fa-sun icon-light"></i>
         <i class="fa-solid fa-moon icon-dark"></i>
+      </button>
+
+      <!-- Mobile Details Panel Toggle Button -->
+      <button id="mobile-details-toggle" class="mobile-toggle-btn" title="Toggle Details Panel">
+        <i class="fa-solid fa-sliders"></i>
       </button>
     </div>
   </header>
@@ -513,6 +544,112 @@
       <div id="lightbox-caption" class="lightbox-caption">Motor Component Image</div>
     </div>
   </div>
+
+  <!-- AUTHENTICATION / LOGIN MODAL -->
+  <div class="modal-overlay" id="modal-login" style="backdrop-filter: blur(12px); z-index: 2500;">
+    <div class="modal-box auth-modal-box">
+      <div class="modal-header auth-modal-header">
+        <div class="auth-header-title">
+          <i class="fa-solid fa-shield-halved auth-logo-icon"></i>
+          <div>
+            <h3>MOTO-TWIN Authentication Portal</h3>
+            <span class="auth-subtitle">Sign in to access Digital Twin Controls & Log Maintenance</span>
+          </div>
+        </div>
+        <button class="close-modal" id="close-login-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body auth-modal-body">
+        <!-- Error Alert Banner -->
+        <div id="auth-alert" class="auth-alert" style="display: none;">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="auth-alert-msg">Invalid credentials. Please try again.</span>
+        </div>
+
+        <!-- Auth Tabs (Login / Register) -->
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="tab-login-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+          <button class="auth-tab-btn" id="tab-register-btn"><i class="fa-solid fa-user-plus"></i> Register Account</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
+            <input type="text" id="login-username" placeholder="Enter username (e.g. admin)" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="login-password"><i class="fa-solid fa-key"></i> Password</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="login-password" placeholder="Enter password" required autocomplete="current-password">
+              <i class="fa-solid fa-eye toggle-password" id="toggle-login-pwd"></i>
+            </div>
+          </div>
+
+          <!-- Quick Fill Preset Accounts -->
+          <div class="demo-accounts-section">
+            <span class="demo-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick-Fill Demo Accounts:</span>
+            <div class="demo-btn-group">
+              <button type="button" class="demo-account-btn admin-demo" data-user="admin" data-pwd="admin123">
+                <i class="fa-solid fa-user-shield"></i> Admin
+              </button>
+              <button type="button" class="demo-account-btn engineer-demo" data-user="engineer" data-pwd="eng123">
+                <i class="fa-solid fa-user-gear"></i> Engineer
+              </button>
+              <button type="button" class="demo-account-btn viewer-demo" data-user="viewer" data-pwd="viewer123">
+                <i class="fa-solid fa-user"></i> Viewer
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-footer auth-footer">
+            <button type="button" class="modal-btn secondary close-modal">Cancel</button>
+            <button type="submit" id="login-submit-btn" class="modal-btn primary auth-submit-btn">
+              <i class="fa-solid fa-right-to-bracket"></i> Sign In
+            </button>
+          </div>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="register-form" class="auth-form" style="display: none;">
+          <div class="form-group">
+            <label for="reg-username"><i class="fa-solid fa-user"></i> Username</label>
+            <input type="text" id="reg-username" placeholder="Choose a username" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-fullname"><i class="fa-solid fa-id-card"></i> Full Name</label>
+            <input type="text" id="reg-fullname" placeholder="Enter full name" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+            <input type="email" id="reg-email" placeholder="name@company.com">
+          </div>
+          <div class="form-group">
+            <label for="reg-password"><i class="fa-solid fa-key"></i> Password</label>
+            <input type="password" id="reg-password" placeholder="Create a password" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-role"><i class="fa-solid fa-user-shield"></i> Requested Role</label>
+            <select id="reg-role" class="form-select">
+              <option value="Viewer">Viewer (Read-Only)</option>
+              <option value="Engineer">Engineer (Maintenance Logger)</option>
+              <option value="Admin">Admin (Full Control)</option>
+            </select>
+          </div>
+
+          <div class="modal-footer auth-footer">
+            <button type="button" class="modal-btn secondary close-modal">Cancel</button>
+            <button type="submit" id="register-submit-btn" class="modal-btn primary auth-submit-btn">
+              <i class="fa-solid fa-user-check"></i> Create Account
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer Backdrop Overlay for Mobile -->
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
 
   <!-- App Core Components -->
   <script type="module" src="/static/app.js"></script>
