@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------
  * MOTO-TWIN CORE Orchestrator (app.js)
- * ES6 Module conducting global state and layouts
+ * ES6 Module conducting global state, RBAC, modals & layout events
  * ------------------------------------------------------------- */
 
 import { TreeComponent } from './components/TreeComponent.js';
@@ -11,7 +11,7 @@ import { DashboardComponent } from './components/DashboardComponent.js';
 // Global Application State
 export const state = {
   currentUser: null, // { id, username, full_name, email, role }
-  role: 'Viewer', // Admin, Engineer, Viewer
+  role: 'Engineer', // Admin, Engineer
   theme: 'dark', // dark, light
   selectedNode: { id: 'plant', label: 'Industrial Plant', type: 'plant' },
   activeFilters: {
@@ -19,7 +19,7 @@ export const state = {
     voltage: '',
     make: '',
     status: '',
-    critical: ''
+    criticality: ''
   },
   searchQuery: '',
   treeData: null,
@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAuth();
   setupGlobalEvents();
   setupMobileDrawers();
+  setupModalTriggers();
   
   // Initialize subcomponents
   CenterPanelComponent.init();
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadData();
 });
 
-// 1. Resizable Panels Splitter Setup
+// 1. Resizable Panels Splitter Setup (FLUID DRAGGING FIX)
 function setupSplitters() {
   const splitterLeft = document.getElementById('splitter-left');
   const splitterRight = document.getElementById('splitter-right');
@@ -51,112 +52,99 @@ function setupSplitters() {
   const panelRight = document.getElementById('panel-right');
   const workspace = document.querySelector('.app-workspace');
 
-  // Left Splitter Dragging
-  splitterLeft.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    splitterLeft.classList.add('active');
-    
-    const onMouseMove = (moveEvent) => {
-      const workspaceRect = workspace.getBoundingClientRect();
-      const newWidth = moveEvent.clientX - workspaceRect.left;
+  if (splitterLeft && panelLeft) {
+    splitterLeft.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      splitterLeft.classList.add('active');
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
       
-      // Bounds checks
-      if (newWidth >= 200 && newWidth <= 450) {
-        panelLeft.style.width = `${newWidth}px`;
-      }
-    };
+      const onMouseMove = (moveEvent) => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const newWidth = moveEvent.clientX - workspaceRect.left;
+        if (newWidth >= 200 && newWidth <= 550) {
+          panelLeft.style.width = `${newWidth}px`;
+        }
+      };
 
-    const onMouseUp = () => {
-      splitterLeft.classList.remove('active');
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
+      const onMouseUp = () => {
+        splitterLeft.classList.remove('active');
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  });
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
 
-  // Right Splitter Dragging
-  splitterRight.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    splitterRight.classList.add('active');
-    
-    const onMouseMove = (moveEvent) => {
-      const workspaceRect = workspace.getBoundingClientRect();
-      const newWidth = workspaceRect.right - moveEvent.clientX;
-      
-      // Bounds checks
-      if (newWidth >= 250 && newWidth <= 500) {
-        panelRight.style.width = `${newWidth}px`;
-      }
-    };
+  if (splitterRight && panelRight) {
+    splitterRight.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      splitterRight.classList.add('active');
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
 
-    const onMouseUp = () => {
-      splitterRight.classList.remove('active');
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
+      const onMouseMove = (moveEvent) => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const newWidth = workspaceRect.right - moveEvent.clientX;
+        if (newWidth >= 250 && newWidth <= 650) {
+          panelRight.style.width = `${newWidth}px`;
+        }
+      };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  });
+      const onMouseUp = () => {
+        splitterRight.classList.remove('active');
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
 }
 
-// 2. Light/Dark Theme Setup
+// 2. Theme Setup
 function setupTheme() {
   const toggle = document.getElementById('theme-toggle');
-  
-  // Set default theme
   document.body.className = 'dark-theme';
 
-  toggle.addEventListener('click', () => {
-    if (state.theme === 'dark') {
-      state.theme = 'light';
-      document.body.className = 'light-theme';
-    } else {
-      state.theme = 'dark';
-      document.body.className = 'dark-theme';
-    }
-    // Update charts labels if loaded
-    DashboardComponent.updateChartColors();
-  });
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      if (state.theme === 'dark') {
+        state.theme = 'light';
+        document.body.className = 'light-theme';
+      } else {
+        state.theme = 'dark';
+        document.body.className = 'dark-theme';
+      }
+    });
+  }
 }
 
-// 3. User Authentication & Session Setup
+// 3. User Authentication & Session Setup (LOGIN MODAL MANDATORY AT START)
 function setupAuth() {
   const headerLoginBtn = document.getElementById('header-login-btn');
   const userProfileMenu = document.getElementById('user-profile-menu');
   const userAvatarBtn = document.getElementById('user-avatar-btn');
   const userDropdown = document.getElementById('user-dropdown');
   const userLogoutBtn = document.getElementById('user-logout-btn');
-
-  const modalLogin = document.getElementById('modal-login');
-  const closeLoginModal = document.getElementById('close-login-modal');
-  const tabLoginBtn = document.getElementById('tab-login-btn');
-  const tabRegisterBtn = document.getElementById('tab-register-btn');
+  const modalAuth = document.getElementById('modal-auth');
   const loginForm = document.getElementById('login-form');
-  const registerForm = document.getElementById('register-form');
-  const toggleLoginPwd = document.getElementById('toggle-login-pwd');
 
-  // Check active session on startup
   checkSession();
 
-  // Header login button opens modal
-  if (headerLoginBtn) {
+  if (headerLoginBtn && modalAuth) {
     headerLoginBtn.addEventListener('click', () => {
-      showAuthAlert('');
-      modalLogin.classList.add('active');
+      modalAuth.classList.add('active');
     });
   }
 
-  // Close login modal
-  if (closeLoginModal) {
-    closeLoginModal.addEventListener('click', () => {
-      modalLogin.classList.remove('active');
-    });
-  }
-
-  // Toggle dropdown menu
   if (userAvatarBtn && userDropdown) {
     userAvatarBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -169,73 +157,26 @@ function setupAuth() {
     });
   }
 
-  // Logout button
   if (userLogoutBtn) {
     userLogoutBtn.addEventListener('click', async () => {
       try {
         await fetch('/api/auth/logout', { method: 'POST' });
       } catch (err) {
-        console.warn("Logout request failed:", err);
+        console.warn("Logout request notice:", err);
       }
       state.currentUser = null;
-      state.role = 'Viewer';
+      state.role = null;
       updateUserUI();
+      // Instantly open login modal
+      if (modalAuth) modalAuth.classList.add('active');
     });
   }
 
-  // Password visibility toggle
-  if (toggleLoginPwd) {
-    toggleLoginPwd.addEventListener('click', () => {
-      const pwdInput = document.getElementById('login-password');
-      if (pwdInput.type === 'password') {
-        pwdInput.type = 'text';
-        toggleLoginPwd.className = 'fa-solid fa-eye-slash toggle-password';
-      } else {
-        pwdInput.type = 'password';
-        toggleLoginPwd.className = 'fa-solid fa-eye toggle-password';
-      }
-    });
-  }
-
-  // Auth Modal Tabs (Sign In / Register)
-  if (tabLoginBtn && tabRegisterBtn) {
-    tabLoginBtn.addEventListener('click', () => {
-      tabLoginBtn.classList.add('active');
-      tabRegisterBtn.classList.remove('active');
-      loginForm.style.display = 'block';
-      registerForm.style.display = 'none';
-      showAuthAlert('');
-    });
-    tabRegisterBtn.addEventListener('click', () => {
-      tabRegisterBtn.classList.add('active');
-      tabLoginBtn.classList.remove('active');
-      registerForm.style.display = 'block';
-      loginForm.style.display = 'none';
-      showAuthAlert('');
-    });
-  }
-
-  // Demo Preset Account Quick-Fill
-  document.querySelectorAll('.demo-account-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const u = btn.getAttribute('data-user');
-      const p = btn.getAttribute('data-pwd');
-      document.getElementById('login-username').value = u;
-      document.getElementById('login-password').value = p;
-      showAuthAlert('');
-    });
-  });
-
-  // Login Form Submit
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value.trim();
-
-      const submitBtn = document.getElementById('login-submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
 
       try {
         const res = await fetch('/api/auth/login', {
@@ -245,87 +186,41 @@ function setupAuth() {
         });
         const data = await res.json();
         if (!res.ok) {
-          showAuthAlert(data.error || 'Invalid credentials.');
+          alert(data.error || 'Invalid credentials. Enter admin/admin or engineer/engineer.');
         } else {
           state.currentUser = data.user;
-          state.role = data.user.role || 'Viewer';
+          state.role = data.user.role || 'Engineer';
           updateUserUI();
-          modalLogin.classList.remove('active');
+          if (modalAuth) modalAuth.classList.remove('active');
         }
       } catch (err) {
-        showAuthAlert('Network error. Unable to reach server.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In';
-      }
-    });
-  }
-
-  // Register Form Submit
-  if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('reg-username').value.trim();
-      const full_name = document.getElementById('reg-fullname').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value.trim();
-      const role = document.getElementById('reg-role').value;
-
-      const submitBtn = document.getElementById('register-submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...';
-
-      try {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, full_name, email, password, role })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          showAuthAlert(data.error || 'Failed to create account.');
-        } else {
-          state.currentUser = data.user;
-          state.role = data.user.role || 'Viewer';
-          updateUserUI();
-          modalLogin.classList.remove('active');
-        }
-      } catch (err) {
-        showAuthAlert('Network error. Unable to reach server.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> Create Account';
+        alert('Unable to authenticate with backend server.');
       }
     });
   }
 }
 
 async function checkSession() {
+  const modalAuth = document.getElementById('modal-auth');
   try {
     const res = await fetch('/api/auth/me');
     if (res.ok) {
       const data = await res.json();
       if (data.authenticated && data.user) {
         state.currentUser = data.user;
-        state.role = data.user.role || 'Viewer';
+        state.role = data.user.role || 'Engineer';
+        if (modalAuth) modalAuth.classList.remove('active');
+      } else {
+        // Not authenticated -> Require immediate login modal
+        if (modalAuth) modalAuth.classList.add('active');
       }
+    } else {
+      if (modalAuth) modalAuth.classList.add('active');
     }
   } catch (err) {
-    console.warn("Unable to verify user session on launch:", err);
+    if (modalAuth) modalAuth.classList.add('active');
   }
   updateUserUI();
-}
-
-function showAuthAlert(msg) {
-  const alertEl = document.getElementById('auth-alert');
-  const msgEl = document.getElementById('auth-alert-msg');
-  if (!alertEl) return;
-  if (!msg) {
-    alertEl.style.display = 'none';
-  } else {
-    msgEl.textContent = msg;
-    alertEl.style.display = 'flex';
-  }
 }
 
 function updateUserUI() {
@@ -339,303 +234,411 @@ function updateUserUI() {
     if (headerLoginBtn) headerLoginBtn.style.display = 'none';
     if (userProfileMenu) userProfileMenu.style.display = 'flex';
 
-    // Initials
     const names = (state.currentUser.full_name || state.currentUser.username).split(' ');
     const initials = names.length >= 2 ? (names[0][0] + names[1][0]).toUpperCase() : names[0].substring(0, 2).toUpperCase();
-    document.getElementById('user-avatar-initials').textContent = initials;
-    document.getElementById('user-display-name').textContent = state.currentUser.full_name || state.currentUser.username;
+    if (document.getElementById('user-avatar-initials')) document.getElementById('user-avatar-initials').textContent = initials;
+    if (document.getElementById('user-display-name')) document.getElementById('user-display-name').textContent = state.currentUser.full_name || state.currentUser.username;
     
     const roleBadge = document.getElementById('user-role-badge');
-    roleBadge.textContent = state.role;
-    roleBadge.className = `user-role-badge role-${state.role.toLowerCase()}`;
+    if (roleBadge) {
+      roleBadge.textContent = state.role;
+      roleBadge.className = `user-role-badge role-${(state.role || 'engineer').toLowerCase()}`;
+    }
 
-    // Dropdown details
-    document.getElementById('dd-user-name').textContent = state.currentUser.full_name || state.currentUser.username;
-    document.getElementById('dd-user-email').textContent = state.currentUser.email || `${state.currentUser.username}@mototwin.com`;
-    document.getElementById('dd-user-role').textContent = state.role;
+    if (document.getElementById('dd-user-name')) document.getElementById('dd-user-name').textContent = state.currentUser.full_name || state.currentUser.username;
+    if (document.getElementById('dd-user-email')) document.getElementById('dd-user-email').textContent = state.currentUser.email || `${state.currentUser.username}@mototwin.com`;
+    if (document.getElementById('dd-user-role')) document.getElementById('dd-user-role').textContent = state.role;
   } else {
     if (headerLoginBtn) headerLoginBtn.style.display = 'flex';
     if (userProfileMenu) userProfileMenu.style.display = 'none';
   }
 
+  // Update UI action controls according to Admin vs Engineer role
   updateUIForRole();
 }
 
 function updateUIForRole() {
-  const importBtn = document.getElementById('import-btn');
+  const importBtn = document.getElementById('btn-import-excel');
+  const addMotorBtn = document.getElementById('add-motor-btn');
   const addLogBtn = document.getElementById('add-log-btn');
-  
-  // Role based access logic
-  if (state.role === 'Viewer') {
-    if (importBtn) importBtn.style.display = 'none';
-    if (addLogBtn) addLogBtn.style.display = 'none';
-  } else if (state.role === 'Engineer') {
-    if (importBtn) importBtn.style.display = 'none';
-    if (addLogBtn) addLogBtn.style.display = 'inline-block';
-  } else {
-    // Admin
-    if (importBtn) importBtn.style.display = 'flex';
-    if (addLogBtn) addLogBtn.style.display = 'inline-block';
+  const addWoBtn = document.getElementById('add-wo-btn');
+
+  const isAdmin = state.role === 'Admin';
+
+  // Admin can modify any field; Engineer is Read-Only across modify actions
+  if (importBtn) importBtn.style.display = isAdmin ? 'flex' : 'none';
+  if (addMotorBtn) addMotorBtn.style.display = isAdmin ? 'inline-block' : 'none';
+  if (addLogBtn) addLogBtn.style.display = isAdmin ? 'inline-block' : 'none';
+  if (addWoBtn) addWoBtn.style.display = isAdmin ? 'inline-block' : 'none';
+}
+
+// 4. Modal Triggers & Excel Validation Hook
+function setupModalTriggers() {
+  // Modal Close buttons
+  document.querySelectorAll('.close-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Don't close login modal if unauthenticated!
+      if (!state.currentUser) return;
+      document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+    });
+  });
+
+  // Import Excel Modal
+  const btnImport = document.getElementById('btn-import-excel');
+  const modalImport = document.getElementById('modal-import-excel');
+  if (btnImport && modalImport) {
+    btnImport.addEventListener('click', () => {
+      if (state.role !== 'Admin') {
+        alert("Admin role required for Excel batch import.");
+        return;
+      }
+      modalImport.classList.add('active');
+    });
+  }
+
+  // Validate Excel
+  const btnValExcel = document.getElementById('btn-validate-excel');
+  if (btnValExcel) {
+    btnValExcel.addEventListener('click', async () => {
+      const fileInput = document.getElementById('excel-file-input');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select an Excel .xlsx spreadsheet file.");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      btnValExcel.disabled = true;
+      btnValExcel.textContent = "Validating...";
+
+      try {
+        const res = await fetch('/api/import/excel/validate', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || "Validation failed.");
+        } else {
+          document.getElementById('import-step-upload').style.display = 'none';
+          document.getElementById('import-step-preview').style.display = 'block';
+
+          const summaryBox = document.getElementById('val-summary-box');
+          summaryBox.innerHTML = `
+            <strong>Validation Results:</strong> Total Rows: ${data.total_rows} | Valid Rows: ${data.valid_rows_count} | Errors: ${data.errors_count}
+          `;
+
+          const tbody = document.querySelector('#import-preview-table tbody');
+          tbody.innerHTML = '';
+          data.preview.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${r.tag}</td><td>${r.name}</td><td>${r.area}</td><td>${r.power_kw} kW</td><td>${r.voltage} V</td><td>${r.current_amp} A</td><td>${r.mcc}</td>`;
+            tbody.appendChild(tr);
+          });
+
+          // Confirm batch import hook
+          document.getElementById('btn-confirm-import').onclick = async () => {
+            const cRes = await fetch('/api/import/excel/confirm', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ rows: data.preview })
+            });
+            if (cRes.ok) {
+              alert("Batch import completed successfully!");
+              modalImport.classList.remove('active');
+              loadData();
+            }
+          };
+        }
+      } catch (err) {
+        alert("Error uploading Excel file.");
+      } finally {
+        btnValExcel.disabled = false;
+        btnValExcel.textContent = "Validate Spreadsheet";
+      }
+    });
+  }
+
+  const btnCancelImport = document.getElementById('btn-cancel-import');
+  if (btnCancelImport) {
+    btnCancelImport.addEventListener('click', () => {
+      document.getElementById('import-step-upload').style.display = 'block';
+      document.getElementById('import-step-preview').style.display = 'none';
+    });
+  }
+
+  // Data Quality Modal
+  const btnDQ = document.getElementById('btn-data-quality');
+  const modalDQ = document.getElementById('modal-data-quality');
+  if (btnDQ && modalDQ) {
+    btnDQ.addEventListener('click', async () => {
+      modalDQ.classList.add('active');
+      const body = document.getElementById('dq-modal-body');
+      body.innerHTML = '<p>Auditing asset database integrity...</p>';
+      try {
+        const res = await fetch('/api/data-quality');
+        const report = await res.json();
+        body.innerHTML = `
+          <div class="validation-summary-box">
+            <h4>Data Quality Index</h4>
+            Total Assets Audited: <strong>${report.total}</strong><br>
+            Complete Records: <strong style="color:#2ecc71;">${report.complete}</strong><br>
+            Incomplete Fields: <strong style="color:#f39c12;">${report.incomplete}</strong><br>
+            Invalid Ratings: <strong style="color:#e74c3c;">${report.invalid}</strong><br>
+            Orphaned Assets: <strong style="color:#e74c3c;">${report.orphaned}</strong>
+          </div>
+        `;
+      } catch (err) {
+        body.innerHTML = '<p style="color:#e74c3c;">Failed to run data quality audit.</p>';
+      }
+    });
+  }
+
+  // Audit Logs Modal
+  const btnAudit = document.getElementById('btn-audit-logs');
+  const modalAudit = document.getElementById('modal-audit-logs');
+  if (btnAudit && modalAudit) {
+    btnAudit.addEventListener('click', async () => {
+      modalAudit.classList.add('active');
+      const tbody = document.querySelector('#audit-logs-table tbody');
+      tbody.innerHTML = '<tr><td colspan="6">Loading system audit trail...</td></tr>';
+      try {
+        const res = await fetch('/api/audit?limit=50');
+        const logs = await res.json();
+        tbody.innerHTML = '';
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No audit events recorded.</td></tr>';
+          return;
+        }
+        logs.forEach(l => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${l.timestamp}</td><td><strong>${l.username}</strong></td><td>${l.action}</td><td>${l.entity || '-'}</td><td>${l.entity_id || '-'}</td><td>${l.new_value || '-'}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#e74c3c;">Failed to load audit logs.</td></tr>';
+      }
+    });
+  }
+
+  // Add Motor Asset Modal
+  const addBtn = document.getElementById('add-motor-btn');
+  const modalAdd = document.getElementById('modal-add-motor');
+  const addForm = document.getElementById('add-motor-form');
+
+  if (addBtn && modalAdd) {
+    addBtn.addEventListener('click', () => {
+      if (state.role !== 'Admin') {
+        alert("Admin role required to add new motor assets.");
+        return;
+      }
+      modalAdd.classList.add('active');
+    });
+  }
+
+  if (addForm) {
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        tag: document.getElementById('add-tag').value.trim(),
+        name: document.getElementById('add-name').value.trim(),
+        area: document.getElementById('add-area').value.trim(),
+        make: document.getElementById('add-make').value.trim(),
+        power_kw: parseFloat(document.getElementById('add-power').value),
+        voltage: parseInt(document.getElementById('add-voltage').value),
+        current_amp: parseFloat(document.getElementById('add-current').value),
+        substation: document.getElementById('add-substation').value.trim(),
+        pcc: document.getElementById('add-pcc').value.trim(),
+        mcc: document.getElementById('add-mcc').value.trim(),
+        feeder: document.getElementById('add-feeder').value.trim(),
+        criticality: document.getElementById('add-criticality').value,
+        status: document.getElementById('add-status').value
+      };
+
+      try {
+        const res = await fetch('/api/motors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || "Failed to create motor.");
+        } else {
+          alert(`Motor ${payload.tag} added successfully!`);
+          modalAdd.classList.remove('active');
+          loadData();
+        }
+      } catch (err) {
+        alert("Network error adding motor.");
+      }
+    });
   }
 }
 
-
-// 4. Global Search, Filtering, and Print Events
+// 5. Global Search, Filter, and View Toggles Setup
 function setupGlobalEvents() {
   const searchInput = document.getElementById('global-search');
   const clearBtn = document.getElementById('clear-search');
   
-  // Debounce search
   let searchTimeout = null;
-  searchInput.addEventListener('input', (e) => {
-    state.searchQuery = e.target.value;
-    clearBtn.style.display = state.searchQuery ? 'block' : 'none';
-    
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      // Trigger instant tree search filter
-      TreeComponent.filterTree(state.searchQuery);
-      // Trigger motor list reload
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      state.searchQuery = e.target.value;
+      if (clearBtn) clearBtn.style.display = state.searchQuery ? 'block' : 'none';
+      
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        refreshCurrentView();
+      }, 300);
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      state.searchQuery = '';
+      clearBtn.style.display = 'none';
       refreshCurrentView();
-    }, 300);
-  });
+    });
+  }
 
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    state.searchQuery = '';
-    clearBtn.style.display = 'none';
-    TreeComponent.filterTree('');
-    refreshCurrentView();
-  });
-
-  // Filter Selects
   const filterIds = [
     { id: 'filter-area', key: 'area' },
     { id: 'filter-voltage', key: 'voltage' },
     { id: 'filter-make', key: 'make' },
     { id: 'filter-status', key: 'status' },
-    { id: 'filter-critical', key: 'critical' }
+    { id: 'filter-criticality', key: 'criticality' }
   ];
 
   filterIds.forEach(({ id, key }) => {
     const el = document.getElementById(id);
-    el.addEventListener('change', (e) => {
-      state.activeFilters[key] = e.target.value;
+    if (el) {
+      el.addEventListener('change', (e) => {
+        state.activeFilters[key] = e.target.value;
+        refreshCurrentView();
+      });
+    }
+  });
+
+  const resetBtn = document.getElementById('reset-filters');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      filterIds.forEach(({ id, key }) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+        state.activeFilters[key] = '';
+      });
       refreshCurrentView();
     });
-  });
+  }
 
-  // Clear Filters
-  document.getElementById('reset-filters').addEventListener('click', () => {
-    filterIds.forEach(({ id, key }) => {
-      const el = document.getElementById(id);
-      el.value = '';
-      state.activeFilters[key] = '';
-    });
-    refreshCurrentView();
-  });
-
-  // Dashboard Toggle
+  // Dashboard View Toggle
   const dbToggle = document.getElementById('dashboard-toggle');
-  dbToggle.addEventListener('click', () => {
-    navigateToNode({ id: 'plant', label: 'Industrial Plant', type: 'plant' });
-  });
+  const eqToggle = document.getElementById('equipment-toggle');
+  const dbView = document.getElementById('dashboard-view');
+  const eqView = document.getElementById('equipment-view');
 
-  // Modal Close Hooks
-  const closeBtns = document.querySelectorAll('.close-modal');
-  closeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+  if (dbToggle && eqToggle) {
+    dbToggle.addEventListener('click', () => {
+      dbToggle.classList.add('active');
+      eqToggle.classList.remove('active');
+      if (dbView) dbView.classList.add('active');
+      if (eqView) eqView.classList.remove('active');
+      state.selectedNode = { id: 'plant', label: 'Industrial Plant', type: 'plant' };
+      CenterPanelComponent.renderBreadcrumbs(state.selectedNode);
     });
-  });
 
-  // Clock Update
-  setInterval(() => {
-    const d = new Date();
-    const formatted = `As of: ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
-    const clock = document.getElementById('live-time');
-    if (clock) clock.textContent = formatted;
-  }, 1000);
+    eqToggle.addEventListener('click', () => {
+      eqToggle.classList.add('active');
+      dbToggle.classList.remove('active');
+      if (eqView) eqView.classList.add('active');
+      if (dbView) dbView.classList.remove('active');
+      refreshCurrentView();
+    });
+  }
 }
 
-// 5. Mobile Drawer Controls
+// 6. Mobile Drawer Setup
 function setupMobileDrawers() {
   const treeToggle = document.getElementById('mobile-tree-toggle');
   const detailsToggle = document.getElementById('mobile-details-toggle');
-  const backdrop = document.getElementById('drawer-backdrop');
   const panelLeft = document.getElementById('panel-left');
   const panelRight = document.getElementById('panel-right');
-
-  const closeDrawers = () => {
-    if (panelLeft) panelLeft.classList.remove('drawer-open');
-    if (panelRight) panelRight.classList.remove('drawer-open');
-    if (backdrop) backdrop.classList.remove('active');
-  };
-
-  const openLeftDrawer = () => {
-    closeDrawers();
-    if (panelLeft) panelLeft.classList.add('drawer-open');
-    if (backdrop) backdrop.classList.add('active');
-  };
-
-  const openRightDrawer = () => {
-    closeDrawers();
-    if (panelRight) panelRight.classList.add('drawer-open');
-    if (backdrop) backdrop.classList.add('active');
-  };
 
   if (treeToggle && panelLeft) {
     treeToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = panelLeft.classList.contains('drawer-open');
-      if (isOpen) {
-        closeDrawers();
-      } else {
-        openLeftDrawer();
-      }
+      panelLeft.classList.toggle('drawer-open');
     });
   }
 
   if (detailsToggle && panelRight) {
     detailsToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = panelRight.classList.contains('drawer-open');
-      if (isOpen) {
-        closeDrawers();
-      } else {
-        openRightDrawer();
-      }
+      panelRight.classList.toggle('drawer-open');
     });
   }
-
-  if (backdrop) {
-    backdrop.addEventListener('click', closeDrawers);
-  }
-
-  // Handle window resize back to desktop (>1024px)
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 1024) {
-      closeDrawers();
-    }
-  });
-
-  // Attach global helpers for component navigation
-  window.closeMobileDrawers = closeDrawers;
-  window.openMobileRightDrawer = openRightDrawer;
 }
 
-// 6. Load and refresh data from Backend
+// 7. Data Loader & State Refresh
 export async function loadData() {
   try {
-    const API_BASE = 'http://127.0.0.1:8000';
-    
-    // 1. Fetch Tree
-    const treeRes = await fetch(`${API_BASE}/api/tree`);
+    const treeRes = await fetch('/api/tree');
     state.treeData = await treeRes.json();
     TreeComponent.init(state.treeData);
 
-    // 2. Fetch Motors (all)
-    const motorsRes = await fetch(`${API_BASE}/api/motors`);
+    const motorsRes = await fetch('/api/motors');
     state.motors = await motorsRes.json();
-    populateFiltersLists();
 
-    // 3. Fetch Dashboard Telemetry
-    const dashRes = await fetch(`${API_BASE}/api/dashboard`);
+    const dashRes = await fetch('/api/dashboard');
     state.dashboardData = await dashRes.json();
     DashboardComponent.render(state.dashboardData);
 
-    // Update views based on selection
     refreshCurrentView();
   } catch (err) {
-    console.error("Failed to retrieve plant data from backend server.", err);
+    console.error("Failed to load plant data from server.", err);
   }
 }
 
-// Populate drop-down filter menus from unique active records
-function populateFiltersLists() {
-  const areas = [...new Set(state.motors.map(m => m.area).filter(Boolean))].sort();
-  const volts = [...new Set(state.motors.map(m => m.voltage).filter(Boolean))].sort((a,b) => a-b);
-  const makes = [...new Set(state.motors.map(m => m.make).filter(Boolean))].sort();
-
-  const areaSelect = document.getElementById('filter-area');
-  const voltSelect = document.getElementById('filter-voltage');
-  const makeSelect = document.getElementById('filter-make');
-
-  // Keep first option
-  areaSelect.innerHTML = '<option value="">All Areas</option>';
-  voltSelect.innerHTML = '<option value="">All Voltages</option>';
-  makeSelect.innerHTML = '<option value="">All Makes</option>';
-
-  areas.forEach(a => areaSelect.add(new Option(a, a)));
-  volts.forEach(v => {
-    const label = v < 1000 ? `${v} V` : `${(v/1000).toFixed(1)} kV`;
-    voltSelect.add(new Option(label, v));
-  });
-  makes.forEach(m => makeSelect.add(new Option(m, m)));
-}
-
-// Navigates and loads details for a node
 export function navigateToNode(node) {
   state.selectedNode = node;
-  
-  // Update header breadcrumbs
   CenterPanelComponent.renderBreadcrumbs(node);
 
   const dbView = document.getElementById('dashboard-view');
   const eqView = document.getElementById('equipment-view');
   const dbToggle = document.getElementById('dashboard-toggle');
-  
-  if (node.type === 'plant') {
-    // Show Dashboard
-    dbView.classList.add('active');
-    eqView.classList.remove('active');
-    dbToggle.classList.add('active');
-    RightPanelComponent.hideCard();
-    if (window.closeMobileDrawers) window.closeMobileDrawers();
-  } else if (node.type === 'motor') {
-    // Highlight motor in tree, show detail card in right panel
-    dbView.classList.remove('active');
-    eqView.classList.add('active');
-    dbToggle.classList.remove('active');
-    
-    // Fetch and show detailed specifications
-    RightPanelComponent.loadMotor(node.id);
-    
-    // For Center Panel in motor selection: Display the list of sibling motors in the Feeder!
-    const parentNodeId = TreeComponent.findParentNodeId(node.id);
-    if (parentNodeId) {
-      CenterPanelComponent.loadEquipmentList({ id: parentNodeId.id, label: parentNodeId.label, type: parentNodeId.type });
-    }
-    
-    // On small screens (<1024px), automatically slide open right drawer for motor details
-    if (window.innerWidth <= 1024 && window.openMobileRightDrawer) {
-      window.openMobileRightDrawer();
-    }
-  } else {
-    // Substation, PCC, MCC, Feeder -> Show connected child list/grid
-    dbView.classList.remove('active');
-    eqView.classList.add('active');
-    dbToggle.classList.remove('active');
-    
-    CenterPanelComponent.loadEquipmentList(node);
-    
-    // Hide details card, it belongs to motors
-    RightPanelComponent.hideCard();
-    if (window.closeMobileDrawers) window.closeMobileDrawers();
-  }
+  const eqToggle = document.getElementById('equipment-toggle');
 
-  // Highlight active tree item
-  TreeComponent.selectNode(node.id);
+  if (node.type === 'plant') {
+    if (dbView) dbView.classList.add('active');
+    if (eqView) eqView.classList.remove('active');
+    if (dbToggle) dbToggle.classList.add('active');
+    if (eqToggle) eqToggle.classList.remove('active');
+    RightPanelComponent.hideCard();
+  } else if (node.type === 'motor') {
+    if (dbView) dbView.classList.remove('active');
+    if (eqView) eqView.classList.add('active');
+    if (dbToggle) dbToggle.classList.remove('active');
+    if (eqToggle) eqToggle.classList.add('active');
+
+    RightPanelComponent.loadMotor(node.id);
+  } else {
+    if (dbView) dbView.classList.remove('active');
+    if (eqView) eqView.classList.add('active');
+    if (dbToggle) dbToggle.classList.remove('active');
+    if (eqToggle) eqToggle.classList.add('active');
+
+    CenterPanelComponent.loadEquipmentList(node);
+    RightPanelComponent.hideCard();
+  }
 }
 
-// Refresh the visible tables or dashboard elements when filters change
 function refreshCurrentView() {
-  // If dashboard is active, re-filter stats inside dashboard
-  if (state.selectedNode.type === 'plant') {
-    // Fetch dashboard info and render
-    DashboardComponent.renderFiltered(state.motors, state.activeFilters, state.searchQuery);
+  const dbView = document.getElementById('dashboard-view');
+  if (dbView && dbView.classList.contains('active')) {
+    DashboardComponent.render(state.dashboardData);
   } else {
-    // Reload equipment grids
-    CenterPanelComponent.loadEquipmentList(state.selectedNode);
+    CenterPanelComponent.renderFilteredAssetGrid(state.motors);
   }
 }

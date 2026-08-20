@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MOTO-TWIN - Industrial Motor & Power Feeding System</title>
+  <title>MOTO-TWIN - Industrial Digital Twin & Electrical Power Management Platform</title>
   
-  <!-- FontAwesome for standard industrial dashboard icons -->
+  <!-- FontAwesome 6 for Industrial Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Google Fonts: Outfit / Consolas -->
+  <!-- Google Fonts: Outfit / Source Code Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
   
-  <!-- Custom Styling -->
+  <!-- Custom SCADA Styling -->
   <link rel="stylesheet" href="/static/style.css">
   
-  <!-- Chart.js for beautiful analytics -->
+  <!-- Chart.js for High-Density Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="dark-theme">
@@ -28,31 +28,36 @@
       </button>
       <i class="fa-solid fa-industry logo-icon"></i>
       <span class="logo-text">MOTO-TWIN</span>
-      <span class="logo-subtext">Digital Twin Asset Hub</span>
+      <span class="logo-subtext">Digital Twin Platform</span>
     </div>
     
     <!-- Breadcrumb Navigation -->
     <div class="header-breadcrumb" id="header-breadcrumb">
-      <span class="crumb active" data-node-id="plant">Plant Network</span>
+      <span class="crumb active" data-node-id="plant"><i class="fa-solid fa-plant-wilt"></i> Main Plant Network</span>
     </div>
 
     <div class="header-controls">
       <!-- Search Input -->
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" id="global-search" placeholder="Search by Tag, Name, MCC, Location..." autocomplete="off">
+        <input type="text" id="global-search" placeholder="Search Tag, MCC, Feeder, Voltage..." autocomplete="off">
         <i class="fa-solid fa-circle-xmark clear-search" id="clear-search" style="display: none;"></i>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="action-button-group">
+        <button id="btn-import-excel" class="header-action-btn" title="Import Excel Assets"><i class="fa-solid fa-file-import"></i> Import</button>
+        <button id="btn-data-quality" class="header-action-btn" title="Data Quality Audit"><i class="fa-solid fa-shield-cat"></i> Data Quality</button>
+        <button id="btn-audit-logs" class="header-action-btn" title="System Audit Logs"><i class="fa-solid fa-clock-rotate-left"></i> Audit Logs</button>
       </div>
 
       <!-- User Profile / Auth Widget -->
       <div class="user-widget" id="user-widget">
-        <!-- Logged Out View -->
         <button id="header-login-btn" class="user-login-btn">
           <i class="fa-solid fa-lock"></i>
           <span>Sign In</span>
         </button>
 
-        <!-- Logged In View -->
         <div id="user-profile-menu" class="user-profile-menu" style="display: none;">
           <button id="user-avatar-btn" class="user-avatar-btn" title="User Profile Menu">
             <div class="user-avatar" id="user-avatar-initials">SA</div>
@@ -62,7 +67,7 @@
             </div>
             <i class="fa-solid fa-chevron-down dropdown-caret"></i>
           </button>
-          <!-- User Dropdown Menu -->
+
           <div class="user-dropdown" id="user-dropdown">
             <div class="user-dropdown-header">
               <div class="dropdown-user-name" id="dd-user-name">System Admin</div>
@@ -92,51 +97,52 @@
 
   <!-- Filter & Sub-Header Bar -->
   <div class="filter-bar">
-    <div class="filter-title"><i class="fa-solid fa-sliders"></i> Filters:</div>
+    <div class="filter-title"><i class="fa-solid fa-sliders"></i> Engineering Filters:</div>
     <div class="filters-container">
       <select id="filter-area" class="filter-select">
-        <option value="">All Areas</option>
+        <option value="">All Plant Areas</option>
       </select>
       <select id="filter-voltage" class="filter-select">
         <option value="">All Voltages</option>
       </select>
       <select id="filter-make" class="filter-select">
-        <option value="">All Makes</option>
+        <option value="">All Manufacturers</option>
       </select>
       <select id="filter-status" class="filter-select">
-        <option value="">All Statuses</option>
+        <option value="">All Operational Status</option>
         <option value="Running">Running</option>
         <option value="Standby">Standby</option>
         <option value="Fault">Fault</option>
       </select>
-      <select id="filter-critical" class="filter-select">
-        <option value="">All Criticality</option>
-        <option value="critical">Critical Motors</option>
-        <option value="standard">Standard Motors</option>
+      <select id="filter-criticality" class="filter-select">
+        <option value="">All Criticalities</option>
+        <option value="A - Critical">A - Critical Asset</option>
+        <option value="B - Important">B - Important Asset</option>
+        <option value="C - Normal">C - Normal Asset</option>
       </select>
       <button id="reset-filters" class="reset-btn" title="Reset Filters">
         <i class="fa-solid fa-arrows-rotate"></i> Clear
       </button>
     </div>
     <div class="view-toggles">
-      <button id="dashboard-toggle" class="view-btn active" title="Show Dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
+      <button id="dashboard-toggle" class="view-btn active" title="Show SCADA Dashboard"><i class="fa-solid fa-chart-pie"></i> SCADA Analytics</button>
+      <button id="equipment-toggle" class="view-btn" title="Show Asset Directory"><i class="fa-solid fa-table-list"></i> Asset Grid</button>
     </div>
   </div>
 
-  <!-- Main Split Layout -->
+  <!-- Main Workspace -->
   <main class="app-workspace">
     
     <!-- LEFT PANEL: Electrical Distribution Tree -->
     <section class="workspace-panel left-panel" id="panel-left">
       <div class="panel-header">
-        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> Electrical Power Tree</div>
+        <div class="panel-title"><i class="fa-solid fa-network-wired"></i> 7-Tier Electrical Tree</div>
         <div class="panel-actions">
           <button id="tree-expand-all" class="panel-action-btn" title="Expand All"><i class="fa-solid fa-circle-chevron-down"></i> Expand</button>
           <button id="tree-collapse-all" class="panel-action-btn" title="Collapse All"><i class="fa-solid fa-circle-chevron-up"></i> Collapse</button>
         </div>
       </div>
       <div class="panel-content scrollable-container">
-        <!-- Hierarchy list container -->
         <ul id="distribution-tree" class="tree-root"></ul>
       </div>
     </section>
@@ -147,14 +153,14 @@
     <!-- CENTER PANEL: Connected Equipment / Dashboard -->
     <section class="workspace-panel center-panel" id="panel-center">
       
-      <!-- VIEW 1: Dashboard Analytics -->
+      <!-- VIEW 1: SCADA Dashboard Analytics -->
       <div id="dashboard-view" class="panel-content scrollable-container active">
         <div class="dashboard-header">
-          <h2>Asset Summary Telemetry</h2>
-          <span class="time-stamp" id="live-time">As of: 2026-08-07 11:30</span>
+          <h2><i class="fa-solid fa-gauge-high"></i> Industrial Electrical Telemetry</h2>
+          <span class="time-stamp" id="live-time">Live Telemetry Active</span>
         </div>
         
-        <!-- KPI Row 1: Motor Status -->
+        <!-- KPI Row 1: Motor Operational Status -->
         <div class="kpi-grid">
           <div class="kpi-card info">
             <div class="kpi-icon"><i class="fa-solid fa-bolt"></i></div>
@@ -181,51 +187,59 @@
             <div class="kpi-icon"><i class="fa-solid fa-circle-exclamation animate-pulse"></i></div>
             <div class="kpi-body">
               <div class="kpi-num" id="kpi-fault-motors">0</div>
-              <div class="kpi-lbl">Fault Motors</div>
+              <div class="kpi-lbl">Fault Trips</div>
             </div>
           </div>
         </div>
 
-        <!-- KPI Row 2: Distribution Nodes -->
+        <!-- KPI Row 2: Condition & Intelligence KPIs -->
         <div class="kpi-grid secondary">
           <div class="kpi-card steel">
-            <div class="kpi-lbl">Substations</div>
-            <div class="kpi-num" id="kpi-total-subs">0</div>
+            <div class="kpi-lbl"><i class="fa-solid fa-heart-pulse"></i> Fleet Avg Health</div>
+            <div class="kpi-num health-indicator" id="kpi-avg-health">85%</div>
           </div>
           <div class="kpi-card steel">
-            <div class="kpi-lbl">Power Control (PCC)</div>
-            <div class="kpi-num" id="kpi-total-pccs">0</div>
+            <div class="kpi-lbl"><i class="fa-solid fa-triangle-exclamation"></i> Active Alarms</div>
+            <div class="kpi-num alarm-count" id="kpi-active-alarms">0</div>
           </div>
           <div class="kpi-card steel">
-            <div class="kpi-lbl">Motor Control (MCC)</div>
-            <div class="kpi-num" id="kpi-total-mccs">0</div>
+            <div class="kpi-lbl"><i class="fa-solid fa-calendar-xmark"></i> Maintenance Overdue</div>
+            <div class="kpi-num" id="kpi-overdue-maint">0</div>
           </div>
           <div class="kpi-card steel">
-            <div class="kpi-lbl">Active Feeders</div>
-            <div class="kpi-num" id="kpi-total-feeders">0</div>
+            <div class="kpi-lbl"><i class="fa-solid fa-plug-circle-bolt"></i> Daily Energy (kWh)</div>
+            <div class="kpi-num" id="kpi-daily-energy">0</div>
+          </div>
+        </div>
+
+        <!-- Predictive Maintenance Alert Strip -->
+        <div class="predictive-banner" id="predictive-banner">
+          <div class="banner-title"><i class="fa-solid fa-brain"></i> Predictive Maintenance Risk Feed</div>
+          <div class="banner-feed" id="predictive-feed">
+            <span class="feed-item"><i class="fa-solid fa-spinner fa-spin"></i> Calculating statistical failure risk metrics...</span>
           </div>
         </div>
 
         <!-- Charts Container -->
         <div class="charts-row">
           <div class="chart-card">
-            <h3>Power Distribution (kW)</h3>
-            <div class="canvas-wrapper"><canvas id="chart-power"></canvas></div>
+            <h3><i class="fa-solid fa-chart-bar"></i> Fleet Health Distribution</h3>
+            <div class="canvas-wrapper"><canvas id="chart-health"></canvas></div>
           </div>
           <div class="chart-card">
-            <h3>Area-wise Motor Count</h3>
-            <div class="canvas-wrapper"><canvas id="chart-area"></canvas></div>
+            <h3><i class="fa-solid fa-shield-cat"></i> Criticality Matrix (A/B/C)</h3>
+            <div class="canvas-wrapper"><canvas id="chart-criticality"></canvas></div>
           </div>
         </div>
 
         <div class="charts-row">
           <div class="chart-card">
-            <h3>Voltage Distribution</h3>
-            <div class="canvas-wrapper"><canvas id="chart-voltage"></canvas></div>
+            <h3><i class="fa-solid fa-bolt-lightning"></i> Power Rating Distribution (kW)</h3>
+            <div class="canvas-wrapper"><canvas id="chart-power"></canvas></div>
           </div>
           <div class="chart-card">
-            <h3>Manufacturer Distribution</h3>
-            <div class="canvas-wrapper"><canvas id="chart-make"></canvas></div>
+            <h3><i class="fa-solid fa-industry"></i> Plant Area Allocation</h3>
+            <div class="canvas-wrapper"><canvas id="chart-area"></canvas></div>
           </div>
         </div>
       </div>
@@ -233,23 +247,18 @@
       <!-- VIEW 2: Child Grid / Table View -->
       <div id="equipment-view" class="panel-content scrollable-container">
         <div class="equipment-header">
-          <h2 id="equipment-title">Connected Equipment</h2>
+          <h2 id="equipment-title">Connected Digital Twin Equipment</h2>
           <div class="export-actions">
+            <button id="add-motor-btn" class="action-btn primary-btn"><i class="fa-solid fa-plus"></i> Add Motor Asset</button>
             <button id="export-excel-btn" class="action-btn"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-            <button id="print-filtered-btn" class="action-btn"><i class="fa-solid fa-print"></i> Print Details</button>
+            <button id="print-filtered-btn" class="action-btn"><i class="fa-solid fa-print"></i> Print Report</button>
           </div>
         </div>
-        <div class="equipment-summary" id="equipment-summary">
-          <!-- Quick summary stats of child node -->
-        </div>
+        <div class="equipment-summary" id="equipment-summary"></div>
         <div class="equipment-list-container">
           <table class="equipment-table" id="equipment-table">
-            <thead>
-              <!-- Headers populate dynamically -->
-            </thead>
-            <tbody>
-              <!-- Populate dynamically -->
-            </tbody>
+            <thead></thead>
+            <tbody></tbody>
           </table>
         </div>
       </div>
@@ -258,400 +267,466 @@
     <!-- RIGHT SPLITTER -->
     <div class="panel-splitter" id="splitter-right"></div>
 
-    <!-- RIGHT PANEL: Detailed Information Card -->
+    <!-- RIGHT PANEL: Digital Twin Motor Specifications & 14-Tab Engine -->
     <section class="workspace-panel right-panel" id="panel-right">
-      <div class="panel-header" id="right-panel-header">
-        <div class="panel-title"><i class="fa-solid fa-circle-info"></i> Asset Specification</div>
-        <button id="print-motor-btn" class="panel-action-btn" title="Print Asset Report"><i class="fa-solid fa-print"></i> Print</button>
-      </div>
-      
-      <!-- Empty State -->
-      <div id="right-empty-state" class="panel-content flex-center">
-        <div class="empty-message">
-          <i class="fa-solid fa-server empty-icon"></i>
-          <h3>No Equipment Selected</h3>
-          <p>Click on any node in the Electrical distribution tree to view nameplate specifications, drawings, location, and maintenance logs.</p>
+      <div class="panel-header">
+        <div class="panel-title"><i class="fa-solid fa-microchip"></i> Digital Twin Specification</div>
+        <div class="panel-actions">
+          <button id="print-motor-btn" class="panel-action-btn" title="Print Motor Datasheet"><i class="fa-solid fa-print"></i> Datasheet</button>
         </div>
       </div>
 
-      <!-- Asset Card -->
-      <div id="right-asset-card" class="panel-content scrollable-container" style="display: none;">
-        <!-- Card Header Info -->
-        <div class="asset-card-header">
-          <div class="asset-title-group">
-            <h2 id="asset-tag">M-101</h2>
-            <div id="asset-name">Raw Coal Conveyor Motor</div>
-          </div>
-          <span id="asset-status-badge" class="status-badge running">Running</span>
+      <div class="panel-content scrollable-container" id="right-panel-content">
+        <!-- Empty State -->
+        <div class="right-empty-state" id="right-empty-state">
+          <i class="fa-solid fa-engine-warning empty-icon"></i>
+          <h3>No Asset Selected</h3>
+          <p>Select any motor tag from the 7-tier Electrical Tree or Asset Grid to inspect its full Digital Twin parameters.</p>
         </div>
 
-        <!-- Quick Detail Badges -->
-        <div class="quick-specs">
-          <div class="spec-badge"><span class="lbl">POWER</span><span class="val" id="quick-power">110 kW</span></div>
-          <div class="spec-badge"><span class="lbl">VOLTAGE</span><span class="val" id="quick-voltage">415 V</span></div>
-          <div class="spec-badge"><span class="lbl">RPM</span><span class="val" id="quick-rpm">1485</span></div>
-          <div class="spec-badge"><span class="lbl">CRITICALITY</span><span class="val critical" id="quick-critical">Critical</span></div>
-        </div>
-
-        <!-- Detail Tabs -->
-        <div class="tab-header">
-          <button class="tab-btn active" data-tab="tab-general">General</button>
-          <button class="tab-btn" data-tab="tab-electrical">Electrical</button>
-          <button class="tab-btn" data-tab="tab-mechanical">Mechanical</button>
-          <button class="tab-btn" data-tab="tab-feeding">Feeding Path</button>
-          <button class="tab-btn" data-tab="tab-images">Images</button>
-          <button class="tab-btn" data-tab="tab-docs">Docs</button>
-          <button class="tab-btn" data-tab="tab-maintenance">Maintenance</button>
-        </div>
-
-        <div class="tab-body">
-          <!-- TAB: General Specs -->
-          <div class="tab-pane active" id="tab-general">
-            <table class="details-table">
-              <tr><td>Motor Tag</td><td id="lbl-tag" class="bold font-mono text-highlight"></td></tr>
-              <tr><td>Motor Name</td><td id="lbl-name"></td></tr>
-              <tr><td>Plant Area</td><td id="lbl-area"></td></tr>
-              <tr><td>Service Duty</td><td id="lbl-service"></td></tr>
-              <tr><td>Manufacturer</td><td id="lbl-make"></td></tr>
-              <tr><td>Model No.</td><td id="lbl-model"></td></tr>
-              <tr><td>Serial Number</td><td id="lbl-serial" class="font-mono"></td></tr>
-              <tr><td>Manufacturing Year</td><td id="lbl-year"></td></tr>
-              <tr><td>Physical Location</td><td id="lbl-location"></td></tr>
-              <tr><td>Remarks</td><td id="lbl-remarks" class="remarks-text"></td></tr>
-            </table>
-          </div>
-
-          <!-- TAB: Electrical Specs -->
-          <div class="tab-pane" id="tab-electrical">
-            <table class="details-table">
-              <tr><td>Power Rating</td><td id="lbl-power"></td></tr>
-              <tr><td>Operating Voltage</td><td id="lbl-voltage"></td></tr>
-              <tr><td>Full Load Current</td><td id="lbl-current"></td></tr>
-              <tr><td>Frequency</td><td id="lbl-freq"></td></tr>
-              <tr><td>Power Factor</td><td id="lbl-pf"></td></tr>
-              <tr><td>Cable Size</td><td id="lbl-cable-size"></td></tr>
-              <tr><td>Cable Length</td><td id="lbl-cable-len"></td></tr>
-              <tr><td>Starter Type</td><td id="lbl-starter"></td></tr>
-              <tr><td>MPCB/MCCB Details</td><td id="lbl-breaker"></td></tr>
-              <tr><td>Relay Details</td><td id="lbl-relay"></td></tr>
-            </table>
-          </div>
-
-          <!-- TAB: Mechanical Specs -->
-          <div class="tab-pane" id="tab-mechanical">
-            <table class="details-table">
-              <tr><td>Frame Size</td><td id="lbl-frame"></td></tr>
-              <tr><td>Protection Class</td><td id="lbl-protection"></td></tr>
-              <tr><td>Insulation Class</td><td id="lbl-insulation"></td></tr>
-              <tr><td>Duty Standard</td><td id="lbl-duty"></td></tr>
-              <tr><td>Drive End Bearing</td><td id="lbl-bearing-de" class="font-mono"></td></tr>
-              <tr><td>Non-Drive End Bearing</td><td id="lbl-bearing-nde" class="font-mono"></td></tr>
-              <tr><td>Lubrication Grease</td><td id="lbl-lubrication"></td></tr>
-            </table>
-          </div>
-
-          <!-- TAB: Feeding Path -->
-          <div class="tab-pane" id="tab-feeding">
-            <div class="feeding-path-container">
-              <div class="feeding-path-title">Power Incomer Flowchart</div>
-              <!-- Injected SVG Flow Diagram -->
-              <div id="feeding-path-svg-wrapper"></div>
+        <!-- Motor Spec Card -->
+        <div class="right-asset-card" id="right-asset-card" style="display: none;">
+          
+          <!-- Card Header -->
+          <div class="asset-card-header">
+            <div class="asset-identity">
+              <span class="asset-tag" id="asset-tag">M-101</span>
+              <h3 class="asset-name" id="asset-name">Raw Coal Conveyor Motor</h3>
+            </div>
+            <div class="asset-status-container">
+              <span class="status-badge" id="asset-status-badge">Running</span>
+              <span class="health-badge" id="asset-health-badge">85% GOOD</span>
             </div>
           </div>
 
-          <!-- TAB: Images -->
-          <div class="tab-pane" id="tab-images">
-            <div class="images-grid">
-              <div class="img-thumbnail" data-img-type="nameplate">
-                <div class="img-wrapper">
-                  <img id="img-nameplate" src="/static/assets/images/nameplate.svg" alt="Nameplate">
-                </div>
-                <span>Nameplate Drawing</span>
-              </div>
-              <div class="img-thumbnail" data-img-type="photograph">
-                <div class="img-wrapper">
-                  <img id="img-photo" src="/static/assets/images/motor_photograph.svg" alt="Motor Photo">
-                </div>
-                <span>Motor Photograph</span>
-              </div>
-              <div class="img-thumbnail" data-img-type="panel">
-                <div class="img-wrapper">
-                  <img id="img-panel" src="/static/assets/images/panel_photograph.svg" alt="Panel Photo">
-                </div>
-                <span>Feeder Panel Compartment</span>
-              </div>
-              <div class="img-thumbnail" data-img-type="location">
-                <div class="img-wrapper">
-                  <img id="img-loc" src="/static/assets/images/location_photograph.svg" alt="Location Photo">
-                </div>
-                <span>Plant Location Setup</span>
-              </div>
-              <div class="img-thumbnail" data-img-type="foundation">
-                <div class="img-wrapper">
-                  <img id="img-found" src="/static/assets/images/foundation_photograph.svg" alt="Foundation Photo">
-                </div>
-                <span>Foundation Details</span>
-              </div>
+          <!-- Quick Metrics Ribbon -->
+          <div class="quick-metrics-ribbon">
+            <div class="ribbon-item">
+              <span class="lbl">Rating</span>
+              <span class="val" id="quick-power">110 kW</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="lbl">Voltage</span>
+              <span class="val" id="quick-voltage">415 V</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="lbl">Current</span>
+              <span class="val" id="quick-current">190 A</span>
+            </div>
+            <div class="ribbon-item">
+              <span class="lbl">Criticality</span>
+              <span class="val critical" id="quick-critical">A - Critical</span>
             </div>
           </div>
 
-          <!-- TAB: Documents -->
-          <div class="tab-pane" id="tab-docs">
-            <div class="docs-list">
-              <div class="doc-item" data-doc="sld_substation.svg">
-                <i class="fa-solid fa-file-signature doc-icon blue"></i>
-                <div class="doc-info">
-                  <div class="doc-name">Single Line Diagram (SLD)</div>
-                  <div class="doc-meta">Drawing Ref: MT-SLD-CHP-001.svg</div>
-                </div>
-                <button class="open-doc-btn"><i class="fa-solid fa-expand"></i> View</button>
-              </div>
-              <div class="doc-item" data-doc="ga_motor.svg">
-                <i class="fa-solid fa-drafting-compass doc-icon green"></i>
-                <div class="doc-info">
-                  <div class="doc-name">GA Dimension Drawing</div>
-                  <div class="doc-meta">Drawing Ref: MT-GA-315M-R0.svg</div>
-                </div>
-                <button class="open-doc-btn"><i class="fa-solid fa-expand"></i> View</button>
-              </div>
-              <div class="doc-item" data-doc="datasheet">
-                <i class="fa-solid fa-file-invoice doc-icon purple"></i>
-                <div class="doc-info">
-                  <div class="doc-name">Manufacturer Datasheet</div>
-                  <div class="doc-meta">Ref: Standard_Tech_Specs_315.pdf</div>
-                </div>
-                <button class="open-doc-btn"><i class="fa-solid fa-expand"></i> View</button>
-              </div>
-              <div class="doc-item" data-doc="manual">
-                <i class="fa-solid fa-book-open doc-icon orange"></i>
-                <div class="doc-info">
-                  <div class="doc-name">Maintenance Manual</div>
-                  <div class="doc-meta">Ref: Installation_Maintenance_V1.pdf</div>
-                </div>
-                <button class="open-doc-btn"><i class="fa-solid fa-expand"></i> View</button>
-              </div>
-            </div>
+          <!-- 14-Tab Navigation Buttons -->
+          <div class="card-tabs scrollable-tabs">
+            <button class="tab-btn active" data-tab="tab-overview"><i class="fa-solid fa-eye"></i> Overview</button>
+            <button class="tab-btn" data-tab="tab-nameplate"><i class="fa-solid fa-id-card"></i> Nameplate</button>
+            <button class="tab-btn" data-tab="tab-electrical"><i class="fa-solid fa-bolt"></i> Electrical</button>
+            <button class="tab-btn" data-tab="tab-mechanical"><i class="fa-solid fa-gears"></i> Mechanical</button>
+            <button class="tab-btn" data-tab="tab-live"><i class="fa-solid fa-wave-square"></i> Live Data</button>
+            <button class="tab-btn" data-tab="tab-trends"><i class="fa-solid fa-chart-line"></i> Trends</button>
+            <button class="tab-btn" data-tab="tab-health"><i class="fa-solid fa-heart-pulse"></i> Health Math</button>
+            <button class="tab-btn" data-tab="tab-maintenance"><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance</button>
+            <button class="tab-btn" data-tab="tab-alarms"><i class="fa-solid fa-bell"></i> Alarms</button>
+            <button class="tab-btn" data-tab="tab-failures"><i class="fa-solid fa-triangle-exclamation"></i> Failures</button>
+            <button class="tab-btn" data-tab="tab-energy"><i class="fa-solid fa-plug-circle-bolt"></i> Energy</button>
+            <button class="tab-btn" data-tab="tab-path"><i class="fa-solid fa-diagram-project"></i> Power Path</button>
+            <button class="tab-btn" data-tab="tab-documents"><i class="fa-solid fa-folder-open"></i> Documents</button>
+            <button class="tab-btn" data-tab="tab-audit"><i class="fa-solid fa-clock-rotate-left"></i> Audit</button>
           </div>
 
-          <!-- TAB: Maintenance & History -->
-          <div class="tab-pane" id="tab-maintenance">
-            <div class="maintenance-actions">
-              <button id="add-log-btn" class="action-btn primary"><i class="fa-solid fa-circle-plus"></i> Log Maintenance Work</button>
-            </div>
+          <!-- Tab Panes -->
+          <div class="card-tab-content">
             
-            <div class="maintenance-timeline" id="maintenance-timeline">
-              <!-- Logs populated dynamically -->
+            <!-- TAB 1: OVERVIEW -->
+            <div class="tab-pane active" id="tab-overview">
+              <div class="spec-grid">
+                <div class="spec-group">
+                  <div class="group-title"><i class="fa-solid fa-circle-info"></i> Asset Identification</div>
+                  <div class="spec-item"><span class="spec-lbl">Motor Tag</span><span class="spec-val" id="lbl-tag">M-101</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Asset Name</span><span class="spec-val" id="lbl-name">Conveyor Motor</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Plant Area</span><span class="spec-val" id="lbl-area">Coal Handling</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Driven Duty</span><span class="spec-val" id="lbl-service">Conveyor Duty</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Location</span><span class="spec-val" id="lbl-location">Gantry Level 2</span></div>
+                </div>
+                <div class="spec-group">
+                  <div class="group-title"><i class="fa-solid fa-heart-pulse"></i> Condition & Risk</div>
+                  <div class="spec-item"><span class="spec-lbl">Health Score</span><span class="spec-val" id="lbl-health-val">85%</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Condition</span><span class="spec-val" id="lbl-condition-val">GOOD</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Failure Risk</span><span class="spec-val" id="lbl-risk-val">LOW RISK</span></div>
+                  <div class="spec-item"><span class="spec-lbl">Next PM Date</span><span class="spec-val" id="lbl-next-pm">2026-11-10</span></div>
+                </div>
+              </div>
+              <div class="spec-notes">
+                <div class="group-title"><i class="fa-solid fa-note-sticky"></i> Remarks</div>
+                <p id="lbl-remarks">Primary drive motor.</p>
+              </div>
             </div>
+
+            <!-- TAB 2: NAMEPLATE -->
+            <div class="tab-pane" id="tab-nameplate">
+              <div class="spec-group">
+                <div class="group-title"><i class="fa-solid fa-id-card"></i> Manufacturer Nameplate</div>
+                <div class="spec-item"><span class="spec-lbl">Make</span><span class="spec-val" id="lbl-make">Siemens</span></div>
+                <div class="spec-item"><span class="spec-lbl">Model</span><span class="spec-val" id="lbl-model">1LA8315</span></div>
+                <div class="spec-item"><span class="spec-lbl">Serial Number</span><span class="spec-val" id="lbl-serial">S-98481A22</span></div>
+                <div class="spec-item"><span class="spec-lbl">Mfg Year</span><span class="spec-val" id="lbl-year">2022</span></div>
+                <div class="spec-item"><span class="spec-lbl">Frame Size</span><span class="spec-val" id="lbl-frame">315M</span></div>
+                <div class="spec-item"><span class="spec-lbl">Efficiency</span><span class="spec-val" id="lbl-efficiency">94.5%</span></div>
+              </div>
+            </div>
+
+            <!-- TAB 3: ELECTRICAL -->
+            <div class="tab-pane" id="tab-electrical">
+              <div class="spec-group">
+                <div class="group-title"><i class="fa-solid fa-bolt"></i> Electrical Specifications</div>
+                <div class="spec-item"><span class="spec-lbl">Rated Power</span><span class="spec-val" id="lbl-power">110 kW</span></div>
+                <div class="spec-item"><span class="spec-lbl">Operating Voltage</span><span class="spec-val" id="lbl-voltage">415 V</span></div>
+                <div class="spec-item"><span class="spec-lbl">Rated Current</span><span class="spec-val" id="lbl-current">190 A</span></div>
+                <div class="spec-item"><span class="spec-lbl">Frequency</span><span class="spec-val" id="lbl-freq">50 Hz</span></div>
+                <div class="spec-item"><span class="spec-lbl">Power Factor</span><span class="spec-val" id="lbl-pf">0.85</span></div>
+                <div class="spec-item"><span class="spec-lbl">Starter Type</span><span class="spec-val" id="lbl-starter">DOL</span></div>
+                <div class="spec-item"><span class="spec-lbl">Breaker</span><span class="spec-val" id="lbl-breaker">MPCB</span></div>
+                <div class="spec-item"><span class="spec-lbl">Protection Relay</span><span class="spec-val" id="lbl-relay">Numerical</span></div>
+              </div>
+            </div>
+
+            <!-- TAB 4: MECHANICAL -->
+            <div class="tab-pane" id="tab-mechanical">
+              <div class="spec-group">
+                <div class="group-title"><i class="fa-solid fa-gears"></i> Mechanical & Protection</div>
+                <div class="spec-item"><span class="spec-lbl">DE Bearing</span><span class="spec-val" id="lbl-bearing-de">6312-C3</span></div>
+                <div class="spec-item"><span class="spec-lbl">NDE Bearing</span><span class="spec-val" id="lbl-bearing-nde">6212-C3</span></div>
+                <div class="spec-item"><span class="spec-lbl">Lubrication</span><span class="spec-val" id="lbl-lubrication">Mobilith SHC 100</span></div>
+                <div class="spec-item"><span class="spec-lbl">IP Rating</span><span class="spec-val" id="lbl-protection">IP55</span></div>
+                <div class="spec-item"><span class="spec-lbl">Insulation Class</span><span class="spec-val" id="lbl-insulation">Class F</span></div>
+                <div class="spec-item"><span class="spec-lbl">Duty Cycle</span><span class="spec-val" id="lbl-duty">S1 Continuous</span></div>
+              </div>
+            </div>
+
+            <!-- TAB 5: LIVE TELEMETRY -->
+            <div class="tab-pane" id="tab-live">
+              <div class="telemetry-live-grid">
+                <div class="gauge-card"><span class="g-lbl">Vibration DE</span><span class="g-val" id="live-vib-de">1.8 mm/s</span></div>
+                <div class="gauge-card"><span class="g-lbl">Vibration NDE</span><span class="g-val" id="live-vib-nde">1.2 mm/s</span></div>
+                <div class="gauge-card"><span class="g-lbl">DE Temp</span><span class="g-val" id="live-temp-de">65.0 °C</span></div>
+                <div class="gauge-card"><span class="g-lbl">Winding Temp</span><span class="g-val" id="live-temp-wind">73.0 °C</span></div>
+                <div class="gauge-card"><span class="g-lbl">Actual Current</span><span class="g-val" id="live-current">182.5 A</span></div>
+                <div class="gauge-card"><span class="g-lbl">Actual Voltage</span><span class="g-val" id="live-voltage">414.2 V</span></div>
+              </div>
+            </div>
+
+            <!-- TAB 6: TRENDS -->
+            <div class="tab-pane" id="tab-trends">
+              <div class="chart-card">
+                <h3>Vibration & Temperature History</h3>
+                <div class="canvas-wrapper-small"><canvas id="chart-motor-trends"></canvas></div>
+              </div>
+            </div>
+
+            <!-- TAB 7: HEALTH MATH -->
+            <div class="tab-pane" id="tab-health">
+              <div class="group-title"><i class="fa-solid fa-calculator"></i> Contributing Health Factors</div>
+              <div id="health-factors-list" class="health-factors-list"></div>
+            </div>
+
+            <!-- TAB 8: MAINTENANCE & WORK ORDERS -->
+            <div class="tab-pane" id="tab-maintenance">
+              <div class="pane-action-bar">
+                <button id="add-log-btn" class="action-btn primary-btn"><i class="fa-solid fa-plus"></i> Add Maintenance Log</button>
+                <button id="add-wo-btn" class="action-btn"><i class="fa-solid fa-clipboard-check"></i> Create Work Order</button>
+              </div>
+              <div class="timeline-container" id="maintenance-timeline"></div>
+            </div>
+
+            <!-- TAB 9: ALARMS -->
+            <div class="tab-pane" id="tab-alarms">
+              <div id="motor-alarms-list" class="alarms-list"></div>
+            </div>
+
+            <!-- TAB 10: FAILURES -->
+            <div class="tab-pane" id="tab-failures">
+              <div id="motor-failures-list" class="failures-list"></div>
+            </div>
+
+            <!-- TAB 11: ENERGY -->
+            <div class="tab-pane" id="tab-energy">
+              <div class="spec-group">
+                <div class="group-title"><i class="fa-solid fa-plug-circle-bolt"></i> Energy Consumption</div>
+                <div class="spec-item"><span class="spec-lbl">Est. Daily kWh</span><span class="spec-val" id="lbl-daily-kwh">1980 kWh</span></div>
+                <div class="spec-item"><span class="spec-lbl">Est. Monthly kWh</span><span class="spec-val" id="lbl-monthly-kwh">59400 kWh</span></div>
+                <div class="spec-item"><span class="spec-lbl">Daily Energy Cost</span><span class="spec-val" id="lbl-daily-cost">$237.60</span></div>
+              </div>
+            </div>
+
+            <!-- TAB 12: POWER PATH TRACE -->
+            <div class="tab-pane" id="tab-path">
+              <div class="feeding-path-container" id="feeding-path-svg-wrapper"></div>
+            </div>
+
+            <!-- TAB 13: DOCUMENTS -->
+            <div class="tab-pane" id="tab-documents">
+              <div class="doc-list">
+                <div class="doc-item" data-doc="nameplate_photo.jpg">
+                  <i class="fa-solid fa-file-image doc-icon"></i>
+                  <div class="doc-info"><span class="doc-name">Nameplate Photo</span><span class="doc-meta">JPG image</span></div>
+                  <button class="open-doc-btn action-btn">View</button>
+                </div>
+                <div class="doc-item" data-doc="single_line_diagram.svg">
+                  <i class="fa-solid fa-file-code doc-icon"></i>
+                  <div class="doc-info"><span class="doc-name">Single Line Diagram</span><span class="doc-meta">SVG Vector</span></div>
+                  <button class="open-doc-btn action-btn">View</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 14: AUDIT HISTORY -->
+            <div class="tab-pane" id="tab-audit">
+              <div id="motor-audit-list" class="audit-list"></div>
+            </div>
+
           </div>
         </div>
       </div>
     </section>
+
   </main>
 
-  <!-- DIALOG MODAL 2: MAINTENANCE LOGGER -->
-  <div class="modal-overlay" id="modal-maintenance">
-    <div class="modal-box">
+  <!-- MODAL: Authentication Sign In -->
+  <div class="modal-backdrop" id="modal-auth">
+    <div class="modal-card">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-toolbox"></i> Log Maintenance Record</h3>
+        <h3><i class="fa-solid fa-lock"></i> Sign In to MOTO-TWIN</h3>
         <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <form id="maintenance-form">
+        <form id="login-form">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="login-username" placeholder="e.g. admin, engineer" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter password" required>
+          </div>
+          <div class="login-seed-hint" style="background:var(--bg-card);border:1px solid var(--border-color);padding:10px;border-radius:6px;margin-bottom:14px;font-size:12px;">
+            <strong>System Roles & Accounts:</strong><br>
+            • <strong>Admin</strong>: <code>admin</code> / <code>admin</code> (Full Edit/Modify Access)<br>
+            • <strong>Engineer</strong>: <code>engineer</code> / <code>engineer</code> (Read-Only Access)
+          </div>
+          <button type="submit" class="submit-btn" style="width:100%;padding:10px;background:var(--color-primary);border:none;border-radius:6px;color:#fff;font-weight:bold;cursor:pointer;">Sign In to Platform</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Maintenance Log -->
+  <div class="modal-backdrop" id="modal-maintenance">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-screwdriver-wrench"></i> Log Maintenance Record</h3>
+        <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Target Motor Tag</label>
+          <input type="text" id="maint-tag" readonly>
+        </div>
+        <div class="form-group">
+          <label>Maintenance Type</label>
+          <select id="maint-type">
+            <option value="Preventive Maintenance">Preventive Maintenance</option>
+            <option value="Predictive Maintenance">Predictive Maintenance</option>
+            <option value="Breakdown Repair">Breakdown Repair</option>
+            <option value="Corrective Action">Corrective Action</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Technician Name</label>
+          <input type="text" id="maint-technician" placeholder="Eng. Suresh Kumar" required>
+        </div>
+        <div class="form-group">
+          <label>Date Completed</label>
+          <input type="date" id="maint-date" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vibration DE (mm/s)</label>
+            <input type="number" step="0.1" id="maint-vib-de" placeholder="1.8">
+          </div>
+          <div class="form-group">
+            <label>Vibration NDE (mm/s)</label>
+            <input type="number" step="0.1" id="maint-vib-nde" placeholder="1.2">
+          </div>
+          <div class="form-group">
+            <label>Megger (MΩ)</label>
+            <input type="number" step="1" id="maint-megger" placeholder="250">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Findings & Work Notes</label>
+          <textarea id="maint-notes" rows="3" placeholder="Describe findings, parts replaced, and recommendations..." required></textarea>
+        </div>
+        <button id="save-maintenance-btn" class="submit-btn">Save Maintenance Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Motor Asset -->
+  <div class="modal-backdrop" id="modal-add-motor">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-plus"></i> Add New Motor Asset</h3>
+        <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="add-motor-form">
           <div class="form-row">
-            <div class="form-group half">
-              <label for="maint-tag">Motor Tag</label>
-              <input type="text" id="maint-tag" disabled>
+            <div class="form-group">
+              <label>Motor Tag *</label>
+              <input type="text" id="add-tag" placeholder="M-105" required>
             </div>
-            <div class="form-group half">
-              <label for="maint-date">Work Date</label>
-              <input type="date" id="maint-date" required>
+            <div class="form-group">
+              <label>Motor Name *</label>
+              <input type="text" id="add-name" placeholder="Raw Water Pump 2" required>
             </div>
           </div>
-
           <div class="form-row">
-            <div class="form-group half">
-              <label for="maint-type">Activity Type</label>
-              <select id="maint-type" required>
-                <option value="Lubrication">Lubrication &amp; Grease Refill</option>
-                <option value="Bearing Replacement">Bearing Replacement</option>
-                <option value="Alignment">Shaft Realignment</option>
-                <option value="Insulation Test">Insulation Resistance / Megger Test</option>
-                <option value="Vibration Report">Vibration Telemetry Analysis</option>
-                <option value="Overhauling">Major Motor Overhauling</option>
-                <option value="General Inspection">Routine Visual Inspection</option>
+            <div class="form-group">
+              <label>Area</label>
+              <input type="text" id="add-area" placeholder="Coal Handling Plant">
+            </div>
+            <div class="form-group">
+              <label>Manufacturer Make</label>
+              <input type="text" id="add-make" placeholder="ABB">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Power (kW)</label>
+              <input type="number" step="0.1" id="add-power" value="45.0" required>
+            </div>
+            <div class="form-group">
+              <label>Voltage (V)</label>
+              <input type="number" id="add-voltage" value="415" required>
+            </div>
+            <div class="form-group">
+              <label>Current (A)</label>
+              <input type="number" step="0.1" id="add-current" value="75.0" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Substation</label>
+              <input type="text" id="add-substation" value="Main Substation-1">
+            </div>
+            <div class="form-group">
+              <label>PCC Panel</label>
+              <input type="text" id="add-pcc" value="PCC-1">
+            </div>
+            <div class="form-group">
+              <label>MCC Panel</label>
+              <input type="text" id="add-mcc" value="MCC-1">
+            </div>
+            <div class="form-group">
+              <label>Feeder</label>
+              <input type="text" id="add-feeder" value="Feeder-1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Criticality</label>
+              <select id="add-criticality">
+                <option value="A - Critical">A - Critical Asset</option>
+                <option value="B - Important" selected>B - Important Asset</option>
+                <option value="C - Normal">C - Normal Asset</option>
               </select>
             </div>
-            <div class="form-group half">
-              <label for="maint-technician">Technician / Engineer</label>
-              <input type="text" id="maint-technician" placeholder="e.g. Eng. Ramesh Kumar" required>
+            <div class="form-group">
+              <label>Operational Status</label>
+              <select id="add-status">
+                <option value="Running">Running</option>
+                <option value="Standby">Standby</option>
+                <option value="Fault">Fault</option>
+              </select>
             </div>
           </div>
-
-          <div class="form-group">
-            <label for="maint-notes">Job Findings &amp; Notes</label>
-            <textarea id="maint-notes" rows="3" placeholder="Describe work completed, bearing play measurements, thermal readings..." required></textarea>
-          </div>
-
-          <div class="form-title-sub">Measurement Parameters (Optional)</div>
-          <div class="form-row">
-            <div class="form-group third">
-              <label for="maint-vib-de">DE Vib. (mm/s)</label>
-              <input type="number" id="maint-vib-de" step="0.01" min="0" placeholder="e.g. 1.8">
-            </div>
-            <div class="form-group third">
-              <label for="maint-vib-nde">NDE Vib. (mm/s)</label>
-              <input type="number" id="maint-vib-nde" step="0.01" min="0" placeholder="e.g. 1.2">
-            </div>
-            <div class="form-group third">
-              <label for="maint-megger">Megger Value (MΩ)</label>
-              <input type="number" id="maint-megger" step="1" min="0" placeholder="e.g. 350">
-            </div>
-          </div>
+          <button type="submit" class="submit-btn">Save Motor Asset</button>
         </form>
-      </div>
-      <div class="modal-footer">
-        <button class="modal-btn secondary close-modal">Cancel</button>
-        <button class="modal-btn primary" id="save-maintenance-btn">Save Timeline Log</button>
       </div>
     </div>
   </div>
 
-  <!-- DIALOG MODAL 3: DRAWING / DOCUMENT DRAWER -->
-  <div class="modal-overlay" id="modal-viewer" style="backdrop-filter: blur(8px);">
-    <div class="modal-box large">
+  <!-- MODAL: Excel Batch Import & Validation Preview -->
+  <div class="modal-backdrop" id="modal-import-excel">
+    <div class="modal-card modal-large">
       <div class="modal-header">
-        <h3 id="viewer-title"><i class="fa-solid fa-drafting-compass"></i> Engineering Drawing Viewer</h3>
-        <div class="viewer-actions">
-          <button id="zoom-in-btn" class="viewer-btn" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-          <button id="zoom-out-btn" class="viewer-btn" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-          <button id="zoom-fit-btn" class="viewer-btn" title="Reset View"><i class="fa-solid fa-expand"></i></button>
-          <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+        <h3><i class="fa-solid fa-file-excel"></i> Batch Import Motor Assets from Excel</h3>
+        <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="import-step" id="import-step-upload">
+          <p>Select a <code>.xlsx</code> spreadsheet file containing motor asset rows.</p>
+          <input type="file" id="excel-file-input" accept=".xlsx, .xls">
+          <button id="btn-validate-excel" class="submit-btn" style="margin-top:15px;">Validate Spreadsheet</button>
+        </div>
+
+        <div class="import-step" id="import-step-preview" style="display:none;">
+          <div class="validation-summary-box" id="val-summary-box"></div>
+          <h4>Validation Preview (First 10 Rows)</h4>
+          <div class="preview-table-container">
+            <table class="equipment-table" id="import-preview-table">
+              <thead>
+                <tr><th>Tag</th><th>Name</th><th>Area</th><th>Power</th><th>Voltage</th><th>Current</th><th>MCC</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="modal-actions" style="margin-top:20px;display:flex;gap:10px;">
+            <button id="btn-confirm-import" class="submit-btn">Confirm & Import Data</button>
+            <button id="btn-cancel-import" class="action-btn">Cancel</button>
+          </div>
         </div>
       </div>
-      <div class="modal-body doc-view-body">
-        <div class="viewer-workspace" id="viewer-workspace">
-          <!-- Dynamic drawing elements load here -->
+    </div>
+  </div>
+
+  <!-- MODAL: Data Quality Audit -->
+  <div class="modal-backdrop" id="modal-data-quality">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-shield-cat"></i> Asset Data Quality Audit</h3>
+        <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="dq-modal-body">
+        <p>Analyzing asset database integrity...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: System Audit Logs -->
+  <div class="modal-backdrop" id="modal-audit-logs">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clock-rotate-left"></i> System Audit Trail</h3>
+        <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="audit-table-container">
+          <table class="equipment-table" id="audit-logs-table">
+            <thead>
+              <tr><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>ID</th><th>Details</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- LIGHTBOX MODAL -->
-  <div class="modal-overlay" id="modal-lightbox" style="background: rgba(0,0,0,0.9); z-index: 3000;">
-    <button class="close-modal lightbox-close"><i class="fa-solid fa-xmark"></i></button>
-    <div class="lightbox-content">
-      <img id="lightbox-img" src="" alt="Lightbox Zoomed View">
-      <div id="lightbox-caption" class="lightbox-caption">Motor Component Image</div>
-    </div>
-  </div>
-
-  <!-- AUTHENTICATION / LOGIN MODAL -->
-  <div class="modal-overlay" id="modal-login" style="backdrop-filter: blur(12px); z-index: 2500;">
-    <div class="modal-box auth-modal-box">
-      <div class="modal-header auth-modal-header">
-        <div class="auth-header-title">
-          <i class="fa-solid fa-shield-halved auth-logo-icon"></i>
-          <div>
-            <h3>MOTO-TWIN Authentication Portal</h3>
-            <span class="auth-subtitle">Sign in to access Digital Twin Controls & Log Maintenance</span>
-          </div>
-        </div>
-        <button class="close-modal" id="close-login-modal"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="modal-body auth-modal-body">
-        <!-- Error Alert Banner -->
-        <div id="auth-alert" class="auth-alert" style="display: none;">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          <span id="auth-alert-msg">Invalid credentials. Please try again.</span>
-        </div>
-
-        <!-- Auth Tabs (Login / Register) -->
-        <div class="auth-tabs">
-          <button class="auth-tab-btn active" id="tab-login-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
-          <button class="auth-tab-btn" id="tab-register-btn"><i class="fa-solid fa-user-plus"></i> Register Account</button>
-        </div>
-
-        <!-- LOGIN FORM -->
-        <form id="login-form" class="auth-form">
-          <div class="form-group">
-            <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
-            <input type="text" id="login-username" placeholder="Enter username (e.g. admin)" required autocomplete="username">
-          </div>
-          <div class="form-group">
-            <label for="login-password"><i class="fa-solid fa-key"></i> Password</label>
-            <div class="password-input-wrapper">
-              <input type="password" id="login-password" placeholder="Enter password" required autocomplete="current-password">
-              <i class="fa-solid fa-eye toggle-password" id="toggle-login-pwd"></i>
-            </div>
-          </div>
-
-          <!-- Quick Fill Preset Accounts -->
-          <div class="demo-accounts-section">
-            <span class="demo-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick-Fill Demo Accounts:</span>
-            <div class="demo-btn-group">
-              <button type="button" class="demo-account-btn admin-demo" data-user="admin" data-pwd="admin123">
-                <i class="fa-solid fa-user-shield"></i> Admin
-              </button>
-              <button type="button" class="demo-account-btn engineer-demo" data-user="engineer" data-pwd="eng123">
-                <i class="fa-solid fa-user-gear"></i> Engineer
-              </button>
-              <button type="button" class="demo-account-btn viewer-demo" data-user="viewer" data-pwd="viewer123">
-                <i class="fa-solid fa-user"></i> Viewer
-              </button>
-            </div>
-          </div>
-
-          <div class="modal-footer auth-footer">
-            <button type="button" class="modal-btn secondary close-modal">Cancel</button>
-            <button type="submit" id="login-submit-btn" class="modal-btn primary auth-submit-btn">
-              <i class="fa-solid fa-right-to-bracket"></i> Sign In
-            </button>
-          </div>
-        </form>
-
-        <!-- REGISTER FORM -->
-        <form id="register-form" class="auth-form" style="display: none;">
-          <div class="form-group">
-            <label for="reg-username"><i class="fa-solid fa-user"></i> Username</label>
-            <input type="text" id="reg-username" placeholder="Choose a username" required>
-          </div>
-          <div class="form-group">
-            <label for="reg-fullname"><i class="fa-solid fa-id-card"></i> Full Name</label>
-            <input type="text" id="reg-fullname" placeholder="Enter full name" required>
-          </div>
-          <div class="form-group">
-            <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
-            <input type="email" id="reg-email" placeholder="name@company.com">
-          </div>
-          <div class="form-group">
-            <label for="reg-password"><i class="fa-solid fa-key"></i> Password</label>
-            <input type="password" id="reg-password" placeholder="Create a password" required>
-          </div>
-          <div class="form-group">
-            <label for="reg-role"><i class="fa-solid fa-user-shield"></i> Requested Role</label>
-            <select id="reg-role" class="form-select">
-              <option value="Viewer">Viewer (Read-Only)</option>
-              <option value="Engineer">Engineer (Maintenance Logger)</option>
-              <option value="Admin">Admin (Full Control)</option>
-            </select>
-          </div>
-
-          <div class="modal-footer auth-footer">
-            <button type="button" class="modal-btn secondary close-modal">Cancel</button>
-            <button type="submit" id="register-submit-btn" class="modal-btn primary auth-submit-btn">
-              <i class="fa-solid fa-user-check"></i> Create Account
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Drawer Backdrop Overlay for Mobile -->
-  <div id="drawer-backdrop" class="drawer-backdrop"></div>
-
-  <!-- App Core Components -->
+  <!-- Core Scripts -->
   <script type="module" src="/static/app.js"></script>
 </body>
 </html>

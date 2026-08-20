@@ -26,15 +26,12 @@ export const TreeComponent = {
     let iconClass = 'fa-solid ';
     if (node.type === 'plant') iconClass += 'fa-industry plant';
     else if (node.type === 'substation') iconClass += 'fa-server substation';
+    else if (node.type === 'transformer') iconClass += 'fa-bolt-lightning transformer';
     else if (node.type === 'pcc') iconClass += 'fa-cubes pcc';
     else if (node.type === 'mcc') iconClass += 'fa-table-cells mcc';
     else if (node.type === 'feeder') iconClass += 'fa-toggle-on feeder';
-    else if (node.type === 'motor') iconClass += 'fa-engine motor'; // fallback, FontAwesome engine/bolt
+    else if (node.type === 'motor') iconClass += 'fa-gears motor';
     
-    if (node.type === 'motor') {
-      iconClass = 'fa-solid fa-gears motor';
-    }
-
     const li = document.createElement('li');
     li.className = `tree-node ${node.type}`;
     li.setAttribute('data-id', node.id);
@@ -67,6 +64,20 @@ export const TreeComponent = {
     textSpan.className = 'tree-node-label';
     textSpan.textContent = node.label;
     contentDiv.appendChild(textSpan);
+
+    // Health Score Badge for motors
+    if (node.type === 'motor' && node.health_score !== undefined) {
+      const hBadge = document.createElement('span');
+      hBadge.className = 'tree-health-badge';
+      hBadge.style.fontSize = '9px';
+      hBadge.style.padding = '1px 4px';
+      hBadge.style.borderRadius = '8px';
+      hBadge.style.marginLeft = '6px';
+      hBadge.style.background = node.health_score >= 75 ? 'rgba(46,204,113,0.15)' : (node.health_score >= 60 ? 'rgba(243,156,18,0.15)' : 'rgba(231,76,60,0.15)');
+      hBadge.style.color = node.health_score >= 75 ? '#2ecc71' : (node.health_score >= 60 ? '#f39c12' : '#e74c3c');
+      hBadge.textContent = `${node.health_score}%`;
+      contentDiv.appendChild(hBadge);
+    }
 
     // Status indicator light (for motors or aggregates)
     if (node.status) {
