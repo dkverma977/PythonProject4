@@ -866,12 +866,9 @@ class DatabaseAPI:
         if db_url is None:
             db_url = os.environ.get("DATABASE_URL")
             if not db_url:
-                if os.path.exists("motor_platform.db"):
-                    db_url = "sqlite:///motor_platform.db"
-                else:
-                    import urllib.parse
-                    db_password = urllib.parse.quote_plus("sagar@1729")
-                    db_url = f"mysql+pymysql://root:{db_password}@localhost:3306/motor_data"
+                import urllib.parse
+                db_password = urllib.parse.quote_plus("sagar@1729")
+                db_url = f"mysql+pymysql://moto_user:{db_password}@localhost:3306/motor_data"
         
         # Create database if mysql and it doesn't exist
         if db_url.startswith("mysql"):
