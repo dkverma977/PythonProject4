@@ -1,0 +1,14 @@
+flask
+flask-cors
+pandas
+pydantic
+numpy
+sqlalchemy
+openpyxl
+gunicorn
+waitress
+fastapi
+uvicorn
+pymysql
+cryptography
+python-multipart
