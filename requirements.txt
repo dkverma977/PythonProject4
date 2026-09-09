@@ -12,3 +12,4 @@ uvicorn
 pymysql
 cryptography
 python-multipart
+mysql-connector-python
